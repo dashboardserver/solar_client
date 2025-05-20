@@ -22,8 +22,9 @@ function AppWrapper() {
       <div className="flex-1 flex items-center justify-center">
         <Routes>
           <Route path="/" element={<LoginBox selectedPage={selectedPage} />} />
-          <Route path="/admin" element={<AdminPage />} />
-
+          <Route path="/admin" element={
+            <ProtectedRoute allowedRoles={['admin']}><AdminPage /></ProtectedRoute>
+          } />
           {/* ✅ Protected dashboard routes */}
           <Route path="/dashboard/seafdec" element={
             <ProtectedRoute><Seafdec /></ProtectedRoute>
