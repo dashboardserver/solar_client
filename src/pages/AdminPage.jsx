@@ -36,21 +36,21 @@ export default function AdminPage() {
       setMessage(res.data.message);
       setUsername('');
       setPassword('');
-      loadUsers(); // รีเฟรชรายการ
+      loadUsers(); 
     } catch (err) {
       setMessage(err.response?.data?.message || 'Error occurred');
     }
   };
 
-  const handleDeleteUser = async (name) => {
-    if (window.confirm(`Are you sure you want to delete ${name}?`)) {
-      await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/api/auth/delete-user//${name}`);
+  const handleDeleteUser = async (username) => {
+    if (window.confirm(`Are you sure you want to delete ${username}?`)) {
+      await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/api/auth/delete-user/${username}`)
       loadUsers();
     }
   };
   const handleGoToDashboard = (target) => {
   // จำลองว่า admin เข้า dashboard นั้น ๆ
-  localStorage.setItem('dashboard', target);
+  localStorage.setItem('dashboard', target); 
   window.location.href = `/dashboard/${target}`;
 };
 
