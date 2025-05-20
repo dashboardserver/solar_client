@@ -21,9 +21,9 @@ export default function AdminPage() {
   }, []);
 
   const handleLogout = () => {
-  localStorage.clear();
-  navigate('/');
-};
+    localStorage.clear();
+    navigate('/');
+  };
 
 
   const handleCreateUser = async () => {
@@ -36,7 +36,7 @@ export default function AdminPage() {
       setMessage(res.data.message);
       setUsername('');
       setPassword('');
-      loadUsers(); 
+      loadUsers();
     } catch (err) {
       setMessage(err.response?.data?.message || 'Error occurred');
     }
@@ -49,10 +49,9 @@ export default function AdminPage() {
     }
   };
   const handleGoToDashboard = (target) => {
-  // จำลองว่า admin เข้า dashboard นั้น ๆ
-  localStorage.setItem('dashboard', target); 
-  window.location.href = `/dashboard/${target}`;
-};
+    localStorage.setItem('dashboard', target);
+    navigate(`/dashboard/${target}`);
+  };
 
 
   return (
@@ -93,17 +92,17 @@ export default function AdminPage() {
         Create User
       </button>
       <h2 className="font-semibold mt-6 mb-2">Go to Dashboard</h2>
-<div className="flex justify-center gap-4 mb-6">
-  {['seafdec', 'B1', 'C1', 'D1'].map(dash => (
-    <button
-      key={dash}
-      className="bg-green-500 text-white px-4 py-2"
-      onClick={() => handleGoToDashboard(dash)}
-    >
-      {dash}
-    </button>
-  ))}
-</div>
+      <div className="flex justify-center gap-4 mb-6">
+        {['seafdec', 'B1', 'C1', 'D1'].map(dash => (
+          <button
+            key={dash}
+            className="bg-green-500 text-white px-4 py-2"
+            onClick={() => handleGoToDashboard(dash)}
+          >
+            {dash}
+          </button>
+        ))}
+      </div>
 
 
       {message && <p className="mt-4 text-green-600">{message}</p>}
