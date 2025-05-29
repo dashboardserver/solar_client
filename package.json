@@ -18,11 +18,11 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-  "start": "serve -s build",
-  "build": "react-scripts build",
-  "postbuild": "cpx public/_redirects build"
-},
-
+    "dev": "react-scripts start",
+    "start": "serve -s build",
+    "build": "react-scripts build",
+    "postbuild": "cpx public/_redirects build"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",

@@ -35,7 +35,7 @@ export default function LoginPage() {
   return (
     <div
       className="min-h-screen bg-cover bg-center flex items-center justify-center"
-      style={{ backgroundImage: 'url("/solar.jpg")' }}
+      style={{ backgroundImage: 'url("/solar.png")' }}
     >
       <div className="bg-white bg-opacity-90 p-10 rounded-xl shadow-xl max-w-sm w-full">
         <h1 className="text-2xl font-bold mb-6 text-center">Solar Dashboard Login</h1>

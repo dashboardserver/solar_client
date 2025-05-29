@@ -9,14 +9,44 @@ export default function Seafdec() {
   const [selectedDate, setSelectedDate] = useState('');
   const [isCustom, setIsCustom] = useState(false);
 
-  // ✅ ป้องกันผู้ที่ยังไม่ได้ login ด้วย force redirect
-  const token = localStorage.getItem('token');
-  if (!token) {
-    window.location.href = '/';
-    return null;
-  }
+  //language state and translations
+  const [language, setLanguage] = useState('th');
+  const t = {
+    th: {
+      Revenue: 'รายรับ',
+      Today: 'วันนี้',
+      Month: 'เดือน',
+      Total: 'รวม',
+      Yield: 'พลังงานที่ผลิต',
+      env: 'สิ่งแวดล้อม',
+      tree: 'ประโยชน์ด้านสิ่งแวดล้อม',
+      co2Avoided: 'ลดการปล่อย CO₂',
+      eng: 'Eng',
+      thai: 'ไทย',
+    },
+    en: {
+      Revenue: 'Revenue',
+      Today: 'Today',
+      Month: 'Month',
+      Total: 'Total',
+      Yield: 'Energy Yield',
+      env: 'Environment',
+      tree: 'Equivalent trees planted',
+      co2Avoided: 'CO₂ avoided',
+      eng: 'ENG',
+      thai: 'TH',
+    },
+  }[language];
 
-  // ✅ ฟังก์ชันดึงข้อมูล KPI
+  // ✅ Redirect ถ้าไม่มี token (ถูกต้องตามกฎ hooks)
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/';
+    }
+  }, []);
+
+  // ✅ ฟังก์ชันดึง KPI จาก API
   const fetchKPI = useCallback(async () => {
     try {
       const url = selectedDate
@@ -31,19 +61,19 @@ export default function Seafdec() {
     }
   }, [selectedDate]);
 
-  // ✅ ดึงข้อมูลทันทีเมื่อ component โหลดหรือ selectedDate เปลี่ยน
+  // ✅ ดึง KPI ครั้งแรกเมื่อโหลดหน้า
   useEffect(() => {
     fetchKPI();
   }, [fetchKPI]);
 
-  // ✅ Auto-refresh ทุก 10 นาที ถ้าไม่ได้เลือกวันที่ย้อนหลัง
+  // ✅ Refresh KPI ทุก 10 นาที ถ้าไม่ได้เลือกวันที่
   useEffect(() => {
     const interval = setInterval(() => {
       if (!selectedDate) {
-        console.log('⏱ Auto-refresh KPI...');
+        console.log('🔄 Refreshing KPI data...');
         fetchKPI();
       }
-    }, 10 * 60 * 1000); // 10 นาที
+    }, 10 * 60 * 1000);
     return () => clearInterval(interval);
   }, [fetchKPI, selectedDate]);
 
@@ -57,36 +87,45 @@ export default function Seafdec() {
       {/* background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-sky-300 to-blue-100 -z-10" />
 
+      {/* model */}
       <div className="flex flex-col md:flex-row h-full">
         <div className="flex-1 overflow-hidden flex items-center justify-center">
           <TransformWrapper initialScale={1} minScale={0.5} maxScale={5} centerOnInit>
             <TransformComponent>
-              <img
-                src="https://bsv-th-authorities.com/img/DMSc.webp"
-                alt="city"
-                className="w-full h-full object-contain"
-                draggable={false}
-              />
+              <div className="flex flex-col items-center gap-2">
+                <img src="/seafdeclogo.png" alt="logo" className="h-[150px] object-contain" />
+                <img
+                  src="https://bsv-th-authorities.com/img/DMSc.webp"
+                  alt="city"
+                  className="max-w-full max-h-[calc(100vh-6rem)] object-contain"
+                  draggable={false}
+                />
+              </div>
             </TransformComponent>
           </TransformWrapper>
         </div>
 
         {/* Settings and KPI display */}
         <div className="w-full md:w-[400px] p-4 flex flex-col gap-4 bg-white/30 backdrop-blur-lg">
-          {/* Header with logo and settings button */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 h-20">
-              <img src="/seafdeclogo.png" alt="logo" className="h-12" />
-            </div>
+
+          {/* TH/ENG + ⚙️ ปุ่มชิดขวา */}
+          <div className="flex justify-end items-center gap-2 h-10">
             <button
-              className="text-xl font-bold text-blue-800"
+              onClick={() => setLanguage(language === 'th' ? 'en' : 'th')}
+              className="bg-white text-blue-800 font-medium px-3 py-1 rounded shadow hover:bg-blue-100"
+            >
+              {language === 'th' ? t.eng : t.thai}
+            </button>
+
+            <button
+              className="text-3xl font-bold text-blue-800"
               onClick={() => setShowSettings(!showSettings)}
             >
               {showSettings ? 'X' : '⚙️'}
             </button>
           </div>
 
-          {/* Settings and KPI content */}
+          {/* Settings content */}
           {showSettings ? (
             <div className="text-right">
               <p className="mb-2 text-blue-900 font-medium">
@@ -118,21 +157,36 @@ export default function Seafdec() {
                 </p>
               )}
               <div className="bg-gradient-to-br from-green-200 to-teal-100 rounded-xl p-4 shadow">
-                <p className="text-xl font-bold">รายรับ</p>
-                <p className="text-lg">วันนี้: {kpi?.day_income ?? '-'} ฿</p>
-                <p className="text-lg">รวม: {kpi?.total_income ?? '-'} ฿</p>
+                <p className="text-xl font-bold">{t.Revenue}</p>
+                <p className="text-lg">{t.Today}: {kpi?.day_income ?? '-'} ฿</p>
+                <p className="text-lg">{t.Total}: {kpi?.total_income ?? '-'} ฿</p>
+                <div className="flex items-right gap-2 h-30">
+                  <img src="/icon/income.png" alt="logo" className="h-20" />
+                </div>
               </div>
               <div className="bg-gradient-to-br from-green-200 to-teal-100 rounded-xl p-4 shadow">
-                <p className="text-xl font-bold">พลังงานที่ผลิต</p>
-                <p className="text-lg">วันนี้: {kpi?.day_power ?? '-'} kWh</p>
-                <p className="text-lg">เดือนนี้: {kpi?.month_power ?? '-'} kWh</p>
-                <p className="text-lg">สะสม: {kpi?.total_power ?? '-'} kWh</p>
+                <p className="text-xl font-bold">{t.Yield}</p>
+                <p className="text-lg">{t.Today}: {kpi?.day_power ?? '-'} kWh</p>
+                <p className="text-lg">{t.Month}: {kpi?.month_power ?? '-'} kWh</p>
+                <p className="text-lg">{t.Total}: {kpi?.total_power ?? '-'} kWh</p>
+                <div className="flex items-right gap-2 h-30">
+                  <img src="/icon/power.png" alt="logo" className="h-20" />
+                </div>
               </div>
               <div className="bg-gradient-to-br from-green-200 to-teal-100 rounded-xl p-4 shadow">
-                <p className="text-xl font-bold">พลังงานในสถานี</p>
-                <p className="text-lg">ใช้: {kpi?.day_use_energy ?? '-'} kWh</p>
-                <p className="text-lg">ส่งกริด: {kpi?.day_on_grid_energy ?? '-'} kWh</p>
+                <p className="text-xl font-bold">{t.env}</p>
+                <p className="text-lg">{t.tree}: {kpi?.equivalent_trees?.toFixed(0) ?? '-'}</p>
+                <div className="flex items-right gap-2 h-30">
+                  <img src="/icon/trees.png" alt="logo" className="h-20" />
+                </div>
+                <p className="text-lg">
+                  {t.co2Avoided}: {kpi?.co2_avoided ? (kpi.co2_avoided / 1000).toFixed(2) : '-'} Tons
+                </p>
+                <div className="flex items-right gap-2 h-30">
+                  <img src="/icon/co2.png" alt="logo" className="h-20" />
+                </div>
               </div>
+
             </>
           )}
         </div>
