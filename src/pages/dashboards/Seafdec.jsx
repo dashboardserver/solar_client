@@ -161,7 +161,7 @@ export default function Seafdec() {
                 <p className="text-lg">{t.Today}: {kpi?.day_income ?? '-'} ฿</p>
                 <p className="text-lg">{t.Total}: {kpi?.total_income ?? '-'} ฿</p>
                 <div className="flex items-right gap-2 h-30">
-                  <img src="/icon/income.png" alt="logo" className="h-20" />
+                  <img src="/income.png" alt="logo" className="h-20" />
                 </div>
               </div>
               <div className="bg-gradient-to-br from-green-200 to-teal-100 rounded-xl p-4 shadow">
@@ -170,20 +170,20 @@ export default function Seafdec() {
                 <p className="text-lg">{t.Month}: {kpi?.month_power ?? '-'} kWh</p>
                 <p className="text-lg">{t.Total}: {kpi?.total_power ?? '-'} kWh</p>
                 <div className="flex items-right gap-2 h-30">
-                  <img src="/icon/power.png" alt="logo" className="h-20" />
+                  <img src="/power.png" alt="logo" className="h-20" />
                 </div>
               </div>
               <div className="bg-gradient-to-br from-green-200 to-teal-100 rounded-xl p-4 shadow">
                 <p className="text-xl font-bold">{t.env}</p>
                 <p className="text-lg">{t.tree}: {kpi?.equivalent_trees?.toFixed(0) ?? '-'}</p>
                 <div className="flex items-right gap-2 h-30">
-                  <img src="/icon/trees.png" alt="logo" className="h-20" />
+                  <img src="/trees.png" alt="logo" className="h-20" />
                 </div>
                 <p className="text-lg">
                   {t.co2Avoided}: {kpi?.co2_avoided ? (kpi.co2_avoided / 1000).toFixed(2) : '-'} Tons
                 </p>
                 <div className="flex items-right gap-2 h-30">
-                  <img src="/icon/co2.png" alt="logo" className="h-20" />
+                  <img src="/co2.png" alt="logo" className="h-20" />
                 </div>
               </div>
 
