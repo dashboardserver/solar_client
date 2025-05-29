@@ -9,15 +9,14 @@ export default function Seafdec() {
   const [selectedDate, setSelectedDate] = useState('');
   const [isCustom, setIsCustom] = useState(false);
 
-  // ✅ ป้องกันผู้ที่ยังไม่ login
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/');
-    }
-  }, [navigate]);
+  // ✅ ป้องกันผู้ที่ยังไม่ได้ login ด้วย force redirect
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = '/';
+    return null;
+  }
 
-  // ✅ ใช้ useCallback เพื่อให้ใช้ใน useEffect ได้โดยไม่เตือน
+  // ✅ ฟังก์ชันดึงข้อมูล KPI
   const fetchKPI = useCallback(async () => {
     try {
       const url = selectedDate
@@ -32,19 +31,19 @@ export default function Seafdec() {
     }
   }, [selectedDate]);
 
-  // ✅ ดึงทันทีเมื่อ selectedDate เปลี่ยน
+  // ✅ ดึงข้อมูลทันทีเมื่อ component โหลดหรือ selectedDate เปลี่ยน
   useEffect(() => {
     fetchKPI();
   }, [fetchKPI]);
 
-  // ✅ ตั้ง interval ทุก 10 นาที (เฉพาะตอน realtime)
+  // ✅ Auto-refresh ทุก 10 นาที ถ้าไม่ได้เลือกวันที่ย้อนหลัง
   useEffect(() => {
     const interval = setInterval(() => {
       if (!selectedDate) {
         console.log('⏱ Auto-refresh KPI...');
         fetchKPI();
       }
-    }, 10 * 60 * 1000);
+    }, 10 * 60 * 1000); // 10 นาที
     return () => clearInterval(interval);
   }, [fetchKPI, selectedDate]);
 
@@ -90,7 +89,9 @@ export default function Seafdec() {
           {/* Settings and KPI content */}
           {showSettings ? (
             <div className="text-right">
-              <p className="mb-2 text-blue-900 font-medium">User: {localStorage.getItem('username')}</p>
+              <p className="mb-2 text-blue-900 font-medium">
+                User: {localStorage.getItem('username')}
+              </p>
               <button
                 onClick={handleLogout}
                 className="bg-red-500 text-white px-4 py-2 rounded"
