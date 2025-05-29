@@ -14,9 +14,11 @@
     "react-router-dom": "^7.6.0",
     "react-scripts": "^5.0.1",
     "react-zoom-pan-pinch": "^3.7.0",
+    "serve": "^14.2.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+  "start": "serve -s build",
   "build": "react-scripts build",
   "postbuild": "cpx public/_redirects build"
 },
