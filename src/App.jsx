@@ -1,53 +1,28 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import Sidebar from './components/Sidebar';
-import LoginBox from './components/LoginBox';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LoginPage from './pages/LoginPage';
+import DashboardA1 from './pages/dashboards/A1';
+import DashboardB1 from './pages/dashboards/B1';
+import DashboardC1 from './pages/dashboards/C1';
+import DashboardSeafdec from './pages/dashboards/Seafdec';
 import AdminPage from './pages/AdminPage';
-import Seafdec from './pages/dashboards/Seafdec';
-import B1 from './pages/dashboards/B1';
-import C1 from './pages/dashboards/C1';
-import D1 from './pages/dashboards/D1';
-import ProtectedRoute from './components/ProtectedRoute';
-
-function AppWrapper() {
-  const [selectedPage, setSelectedPage] = useState(null);
-  const location = useLocation();
-
-  const hideSidebar =
-    location.pathname.startsWith('/dashboard/') || location.pathname === '/admin';
-
-  return (
-    <div className="flex h-screen">
-      {!hideSidebar && <Sidebar onSelect={setSelectedPage} />}
-      <div className="flex-1 flex items-center justify-center">
-        <Routes>
-          <Route path="/" element={<LoginBox selectedPage={selectedPage} />} />
-          <Route path="/admin" element={
-            <ProtectedRoute allowedRoles={['admin']}><AdminPage /></ProtectedRoute>
-          } />
-          {/* ✅ Protected dashboard routes */}
-          <Route path="/dashboard/seafdec" element={
-            <ProtectedRoute><Seafdec /></ProtectedRoute>
-          } />
-          <Route path="/dashboard/B1" element={
-            <ProtectedRoute><B1 /></ProtectedRoute>
-          } />
-          <Route path="/dashboard/C1" element={
-            <ProtectedRoute><C1 /></ProtectedRoute>
-          } />
-          <Route path="/dashboard/D1" element={
-            <ProtectedRoute><D1 /></ProtectedRoute>
-          } />
-        </Routes>
-      </div>
-    </div>
-  );
-}
-
-export default function App() {
+function App() {
   return (
     <Router>
-      <AppWrapper />
+      <Routes>
+        {/* หน้า Login เป็น root */}
+        <Route path="/" element={<LoginPage />} />
+
+        {/* Dashboard ของแต่ละ user */}
+        <Route path="/dashboard/A1" element={<DashboardA1 />} />
+        <Route path="/dashboard/B1" element={<DashboardB1 />} />
+        <Route path="/dashboard/C1" element={<DashboardC1 />} />
+        <Route path="/dashboard/seafdec" element={<DashboardSeafdec />} />
+
+        {/* หน้า admin */}
+        <Route path="/admin" element={<AdminPage />} />
+      </Routes>
     </Router>
   );
 }
+
+export default App;

@@ -56,7 +56,7 @@ export default function AdminPage() {
 
   return (
     <div className="text-center">
-      <h1 className="text-2xl font-bold mb-4">Admin Panel</h1>
+      <h1 className="text-3xl font-bold mt-6 mb-4">Admin Panel</h1>
 
       <div className="mb-4">
         <input
@@ -79,24 +79,25 @@ export default function AdminPage() {
           onChange={(e) => setDashboard(e.target.value)}
         >
           <option value="seafdec">seafdec</option>
+          <option value="A1">A1</option>
           <option value="B1">B1</option>
           <option value="C1">C1</option>
-          <option value="D1">D1</option>
+
         </select>
       </div>
 
       <button
-        className="bg-blue-500 text-white px-4 py-2"
+        className="bg-blue-500 text-white px-4 py-2 mb-6 rounded hover:bg-gray-700 transition-colors"
         onClick={handleCreateUser}
       >
         Create User
       </button>
       <h2 className="font-semibold mt-6 mb-2">Go to Dashboard</h2>
       <div className="flex justify-center gap-4 mb-6">
-        {['seafdec', 'B1', 'C1', 'D1'].map(dash => (
+        {['seafdec','A1', 'B1', 'C1'].map(dash => (
           <button
             key={dash}
-            className="bg-green-500 text-white px-4 py-2"
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors"
             onClick={() => handleGoToDashboard(dash)}
           >
             {dash}
@@ -110,26 +111,41 @@ export default function AdminPage() {
       <hr className="my-6" />
 
       <h2 className="font-semibold mb-2">User List</h2>
-      <ul className="mb-6">
-        {users.map((user) => (
-          <li key={user.username} className="mb-2">
-            {user.username} → {user.assignedDashboard}
-            <button
-              className="ml-4 bg-red-500 text-white px-2 py-1 text-sm"
-              onClick={() => handleDeleteUser(user.username)}
-            >
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
-
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left mx-auto max-w-4xl">
+        {['seafdec','A1', 'B1', 'C1',].map(dashboard => {
+          const group = users.filter(user => user.assignedDashboard === dashboard);
+          return (
+            <div key={dashboard} className="border p-4 rounded shadow bg-white">
+              <h3 className="font-bold text-lg mb-2">{dashboard}</h3>
+              {group.length > 0 ? (
+                <ul>
+                  {group.map(user => (
+                    <li key={user.username} className="mb-1 flex justify-between items-center">
+                      <span>{user.username}</span>
+                      <button
+                        className="bg-red-500 text-white px-2 py-1 text-sm rounded hover:bg-red-600 transition-colors"
+                        onClick={() => handleDeleteUser(user.username)}
+                      >
+                        Delete
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-500 italic">No users</p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-6">
       <button
-        className="bg-gray-800 text-white px-4 py-2"
+        className="bg-red-700 text-white px-4 py-2 mb-6 rounded hover:bg-gray-700 transition-colors " 
         onClick={handleLogout}
       >
         Logout
       </button>
+      </div>
     </div>
   );
 }
