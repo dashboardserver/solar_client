@@ -9,6 +9,14 @@ export default function Seafdec() {
   const [selectedDate, setSelectedDate] = useState('');
   const [isCustom, setIsCustom] = useState(false);
 
+  // ✅ ป้องกันผู้ที่ยังไม่ login
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/');
+    }
+  }, [navigate]);
+
   // ✅ ใช้ useCallback เพื่อให้ใช้ใน useEffect ได้โดยไม่เตือน
   const fetchKPI = useCallback(async () => {
     try {
@@ -47,7 +55,7 @@ export default function Seafdec() {
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
-      {/*background gradient */}
+      {/* background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-sky-300 to-blue-100 -z-10" />
 
       <div className="flex flex-col md:flex-row h-full">
@@ -66,11 +74,10 @@ export default function Seafdec() {
 
         {/* Settings and KPI display */}
         <div className="w-full md:w-[400px] p-4 flex flex-col gap-4 bg-white/30 backdrop-blur-lg">
-        {/* Header with logo and settings button */}
+          {/* Header with logo and settings button */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 h-20">
               <img src="/seafdeclogo.png" alt="logo" className="h-12" />
-
             </div>
             <button
               className="text-xl font-bold text-blue-800"
