@@ -8,34 +8,41 @@ export default function AdminPage() {
   const [dashboard, setDashboard] = useState('seafdec');
   const [message, setMessage] = useState('');
   const [users, setUsers] = useState([]);
+  const [isAuthChecked, setIsAuthChecked] = useState(false); // ✅ เพิ่มตรงนี้
   const navigate = useNavigate();
 
-  // ตรวจสอบว่า admin เข้าสู่ระบบหรือไม่
   const loadUsers = async () => {
     const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/auth/list-users`);
     setUsers(res.data);
   };
 
+  // ✅ ตรวจ token และ role อย่างปลอดภัย
   useEffect(() => {
-    loadUsers();
-  }, []);
+    const token = localStorage.getItem('token');
+    const dashboard = localStorage.getItem('dashboard');
+
+    console.log('[ADMIN] Checking login...');
+    console.log('token:', token);
+    console.log('dashboard:', dashboard);
+
+    // ✅ ใหม่: ต้องมี token และ dashboard เป็น 'admin' หรือ null
+    if (!token || (dashboard && dashboard !== 'admin')) {
+      console.warn('[ADMIN] Not authorized. Redirecting...');
+      navigate('/');
+    } else {
+      loadUsers();
+    }
+
+    setIsAuthChecked(true);
+  }, [navigate]);
+
+
 
   const handleLogout = () => {
     localStorage.clear();
     navigate('/');
   };
 
-  //Redirect ถ้าไม่มี token (ถูกต้องตามกฎ hooks) 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role');
-
-    if (!token || !role || role !== 'admin') {
-      window.location.href = '/';
-    }
-  }, []);
-
-  // ฟังก์ชันสร้างผู้ใช้ใหม่
   const handleCreateUser = async () => {
     try {
       const res = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/auth/create-user`, {
@@ -52,20 +59,20 @@ export default function AdminPage() {
     }
   };
 
-  // ฟังก์ชันลบผู้ใช้
   const handleDeleteUser = async (username) => {
     if (window.confirm(`Are you sure you want to delete ${username}?`)) {
-      await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/api/auth/delete-user/${username}`)
+      await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/api/auth/delete-user/${username}`);
       loadUsers();
     }
   };
 
-  // ฟังก์ชันเปลี่ยนหน้าไปยังแดชบอร์ดที่เลือก
   const handleGoToDashboard = (target) => {
     localStorage.setItem('dashboard', target);
     navigate(`/dashboard/${target}`);
   };
 
+  // ✅ ยังไม่ตรวจเสร็จก็ไม่ render
+  if (!isAuthChecked) return null;
 
   return (
     <div className="text-center">
@@ -95,7 +102,6 @@ export default function AdminPage() {
           <option value="A1">A1</option>
           <option value="B1">B1</option>
           <option value="C1">C1</option>
-
         </select>
       </div>
 
@@ -105,6 +111,7 @@ export default function AdminPage() {
       >
         Create User
       </button>
+
       <h2 className="font-semibold mt-6 mb-2">Go to Dashboard</h2>
       <div className="flex justify-center gap-4 mb-6">
         {['seafdec', 'A1', 'B1', 'C1'].map(dash => (
@@ -118,14 +125,13 @@ export default function AdminPage() {
         ))}
       </div>
 
-
       {message && <p className="mt-4 text-green-600">{message}</p>}
 
       <hr className="my-6" />
 
       <h2 className="font-semibold mb-2">User List</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left mx-auto max-w-4xl">
-        {['seafdec', 'A1', 'B1', 'C1',].map(dashboard => {
+        {['seafdec', 'A1', 'B1', 'C1'].map(dashboard => {
           const group = users.filter(user => user.assignedDashboard === dashboard);
           return (
             <div key={dashboard} className="border p-4 rounded shadow bg-white">
@@ -151,9 +157,10 @@ export default function AdminPage() {
           );
         })}
       </div>
+
       <div className="mt-6">
         <button
-          className="bg-red-700 text-white px-4 py-2 mb-6 rounded hover:bg-gray-700 transition-colors "
+          className="bg-red-700 text-white px-4 py-2 mb-6 rounded hover:bg-gray-700 transition-colors"
           onClick={handleLogout}
         >
           Logout
