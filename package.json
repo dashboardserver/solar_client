@@ -18,9 +18,9 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "dev": "react-scripts start",
+    "dev": "cross-env GENERATE_SOURCEMAP=false react-scripts start",
     "start": "serve -s build",
-    "build": "react-scripts build",
+    "build": "cross-env GENERATE_SOURCEMAP=false react-scripts build",
     "postbuild": "cpx public/_redirects build"
   },
   "eslintConfig": {

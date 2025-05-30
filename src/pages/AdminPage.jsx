@@ -25,7 +25,17 @@ export default function AdminPage() {
     navigate('/');
   };
 
+  //Redirect ถ้าไม่มี token (ถูกต้องตามกฎ hooks) 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
 
+    if (!token || !role || role !== 'admin') {
+      window.location.href = '/';
+    }
+  }, []);
+
+  // ฟังก์ชันสร้างผู้ใช้ใหม่
   const handleCreateUser = async () => {
     try {
       const res = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/auth/create-user`, {
@@ -42,12 +52,15 @@ export default function AdminPage() {
     }
   };
 
+  // ฟังก์ชันลบผู้ใช้
   const handleDeleteUser = async (username) => {
     if (window.confirm(`Are you sure you want to delete ${username}?`)) {
       await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/api/auth/delete-user/${username}`)
       loadUsers();
     }
   };
+
+  // ฟังก์ชันเปลี่ยนหน้าไปยังแดชบอร์ดที่เลือก
   const handleGoToDashboard = (target) => {
     localStorage.setItem('dashboard', target);
     navigate(`/dashboard/${target}`);
@@ -94,7 +107,7 @@ export default function AdminPage() {
       </button>
       <h2 className="font-semibold mt-6 mb-2">Go to Dashboard</h2>
       <div className="flex justify-center gap-4 mb-6">
-        {['seafdec','A1', 'B1', 'C1'].map(dash => (
+        {['seafdec', 'A1', 'B1', 'C1'].map(dash => (
           <button
             key={dash}
             className="bg-green-500 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors"
@@ -112,7 +125,7 @@ export default function AdminPage() {
 
       <h2 className="font-semibold mb-2">User List</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left mx-auto max-w-4xl">
-        {['seafdec','A1', 'B1', 'C1',].map(dashboard => {
+        {['seafdec', 'A1', 'B1', 'C1',].map(dashboard => {
           const group = users.filter(user => user.assignedDashboard === dashboard);
           return (
             <div key={dashboard} className="border p-4 rounded shadow bg-white">
@@ -139,12 +152,12 @@ export default function AdminPage() {
         })}
       </div>
       <div className="mt-6">
-      <button
-        className="bg-red-700 text-white px-4 py-2 mb-6 rounded hover:bg-gray-700 transition-colors " 
-        onClick={handleLogout}
-      >
-        Logout
-      </button>
+        <button
+          className="bg-red-700 text-white px-4 py-2 mb-6 rounded hover:bg-gray-700 transition-colors "
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
       </div>
     </div>
   );

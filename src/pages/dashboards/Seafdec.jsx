@@ -7,26 +7,29 @@ export default function Seafdec() {
   const [showSettings, setShowSettings] = useState(false);
   const [kpi, setKpi] = useState(null);
   const [selectedDate, setSelectedDate] = useState('');
-  const [isCustom, setIsCustom] = useState(false);
-
-  //language state and translations
   const [language, setLanguage] = useState('th');
+  const [isToday, setIsToday] = useState(true);
+
   const t = {
     th: {
       Revenue: 'รายรับ',
       Today: 'วันนี้',
+      Yesterday: 'เมื่อวาน',
       Month: 'เดือน',
       Total: 'รวม',
       Yield: 'พลังงานที่ผลิต',
-      env: 'สิ่งแวดล้อม',
-      tree: 'ประโยชน์ด้านสิ่งแวดล้อม',
+      env: 'ประโยชน์ด้านสิ่งแวดล้อม',
+      tree: 'เทียบเท่าการปลูกต้นไม้ได้',
       co2Avoided: 'ลดการปล่อย CO₂',
       eng: 'Eng',
       thai: 'ไทย',
+      todayText: 'แสดงข้อมูลของวันนี้',
+      yesterdayText: (date) => `แสดงข้อมูลของวันที่ ${date}`,
     },
     en: {
       Revenue: 'Revenue',
       Today: 'Today',
+      Yesterday: 'Yesterday',
       Month: 'Month',
       Total: 'Total',
       Yield: 'Energy Yield',
@@ -35,10 +38,11 @@ export default function Seafdec() {
       co2Avoided: 'CO₂ avoided',
       eng: 'ENG',
       thai: 'TH',
+      todayText: 'Show today\'s information',
+      yesterdayText: (date) => `Show information of the date ${date}`,
     },
   }[language];
 
-  // ✅ Redirect ถ้าไม่มี token (ถูกต้องตามกฎ hooks)
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -46,7 +50,20 @@ export default function Seafdec() {
     }
   }, []);
 
-  // ✅ ฟังก์ชันดึง KPI จาก API
+  const updateDate = useCallback(() => {
+    if (isToday) {
+      setSelectedDate('');
+    } else {
+      const d = new Date();
+      d.setDate(d.getDate() - 1);
+      setSelectedDate(d.toISOString().split('T')[0]);
+    }
+  }, [isToday]);
+
+  useEffect(() => {
+    updateDate();
+  }, [isToday, updateDate]);
+
   const fetchKPI = useCallback(async () => {
     try {
       const url = selectedDate
@@ -61,21 +78,9 @@ export default function Seafdec() {
     }
   }, [selectedDate]);
 
-  // ✅ ดึง KPI ครั้งแรกเมื่อโหลดหน้า
   useEffect(() => {
     fetchKPI();
   }, [fetchKPI]);
-
-  // ✅ Refresh KPI ทุก 10 นาที ถ้าไม่ได้เลือกวันที่
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!selectedDate) {
-        console.log('🔄 Refreshing KPI data...');
-        fetchKPI();
-      }
-    }, 10 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, [fetchKPI, selectedDate]);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -84,10 +89,7 @@ export default function Seafdec() {
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
-      {/* background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-sky-300 to-blue-100 -z-10" />
-
-      {/* model */}
       <div className="flex flex-col md:flex-row h-full">
         <div className="flex-1 overflow-hidden flex items-center justify-center">
           <TransformWrapper initialScale={1} minScale={0.5} maxScale={5} centerOnInit>
@@ -105,15 +107,23 @@ export default function Seafdec() {
           </TransformWrapper>
         </div>
 
-        {/* Settings and KPI display */}
+        {/* KPI Panel */}
         <div className="w-full md:w-[400px] p-4 flex flex-col gap-4 bg-white/30 backdrop-blur-lg">
-
-          {/* TH/ENG + ⚙️ ปุ่มชิดขวา */}
+          {/* Header with buttons */}
           <div className="flex justify-end items-center gap-2 h-10">
             <button
-              onClick={() => setLanguage(language === 'th' ? 'en' : 'th')}
-              className="bg-white text-blue-800 font-medium px-3 py-1 rounded shadow hover:bg-blue-100"
+              onClick={() => setIsToday(!isToday)}
+              className="bg-white text-blue-800 font-medium px-3 py-1 rounded shadow hover:bg-blue-100 flex items-center gap-1"
             >
+              <img src="/calendar.png" alt="calendar" className="h-5 w-5" />
+              {isToday ? t.Today : t.Yesterday}
+            </button>
+
+            <button
+              onClick={() => setLanguage(language === 'th' ? 'en' : 'th')}
+              className="bg-white text-blue-800 font-medium px-3 py-1 rounded shadow hover:bg-blue-100 flex items-center gap-1"
+            >
+              <img src="/language.png" alt="lang" className="h-5 w-5" />
               {language === 'th' ? t.eng : t.thai}
             </button>
 
@@ -125,7 +135,14 @@ export default function Seafdec() {
             </button>
           </div>
 
-          {/* Settings content */}
+          {isToday ? (
+            <p className="text-sm text-right text-gray-600 italic">{t.todayText}</p>
+          ) : (
+            <p className="text-sm text-right text-gray-600 italic">
+              {t.yesterdayText(selectedDate)}
+            </p>
+          )}
+
           {showSettings ? (
             <div className="text-right">
               <p className="mb-2 text-blue-900 font-medium">
@@ -140,22 +157,7 @@ export default function Seafdec() {
             </div>
           ) : (
             <>
-              <input
-                type="date"
-                className="border p-2 rounded w-full"
-                max={new Date().toISOString().split('T')[0]}
-                value={selectedDate}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setSelectedDate(value);
-                  setIsCustom(!!value);
-                }}
-              />
-              {isCustom && (
-                <p className="text-sm text-right text-gray-600 italic">
-                  แสดงข้อมูลของวันที่ {selectedDate}
-                </p>
-              )}
+              {/* KPI Panels */}
               <div className="bg-gradient-to-br from-green-200 to-teal-100 rounded-xl p-4 shadow">
                 <p className="text-xl font-bold">{t.Revenue}</p>
                 <p className="text-lg">{t.Today}: {kpi?.day_income ?? '-'} ฿</p>
@@ -186,7 +188,6 @@ export default function Seafdec() {
                   <img src="/co2.png" alt="logo" className="h-20" />
                 </div>
               </div>
-
             </>
           )}
         </div>
