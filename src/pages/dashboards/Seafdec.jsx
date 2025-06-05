@@ -89,26 +89,35 @@ export default function Seafdec() {
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-sky-300 to-blue-100 -z-10" />
+      <div className="absolute inset-0 bg-gradient-to-b from-sky-300 to-bgblue -z-10" />
       <div className="flex flex-col md:flex-row h-full">
         <div className="flex-1 overflow-hidden flex items-center justify-center">
-          <TransformWrapper initialScale={1} minScale={0.5} maxScale={5} centerOnInit>
-            <TransformComponent>
-              <div className="flex flex-col items-center gap-2">
-                <img src="/seafdeclogo.png" alt="logo" className="h-[150px] object-contain" />
+          <div className="flex flex-col items-center gap-2 mt-8">
+            {/* LOGO */}
+            <img
+              src="/seafdeclogo.png"
+              alt="logo"
+              className="h-[150px] object-contain"
+            />
+
+            {/* Structure */}
+            <TransformWrapper initialScale={1} minScale={0.5} maxScale={5} centerOnInit>
+              <TransformComponent>
                 <img
-                  src="https://bsv-th-authorities.com/img/DMSc.webp"
-                  alt="city"
-                  className="max-w-full max-h-[calc(100vh-6rem)] object-contain"
+                  src="/structure.png"
+                  alt="structure"
+                  className="max-w-full max-h-[calc(100vh-10rem)] object-contain"
                   draggable={false}
                 />
-              </div>
-            </TransformComponent>
-          </TransformWrapper>
+              </TransformComponent>
+            </TransformWrapper>
+          </div>
         </div>
 
+
+
         {/* KPI Panel */}
-        <div className="w-full md:w-[400px] p-4 flex flex-col gap-4 bg-white/30 backdrop-blur-lg">
+        <div className="w-full md:w-[400px] p-4 flex flex-col gap-4 bg-white/30 backdrop-blur-lg overflow-y-auto shadow">
           {/* Header with buttons */}
           <div className="flex justify-end items-center gap-2 h-10">
             <button
@@ -135,13 +144,7 @@ export default function Seafdec() {
             </button>
           </div>
 
-          {isToday ? (
-            <p className="text-sm text-right text-gray-600 italic">{t.todayText}</p>
-          ) : (
-            <p className="text-sm text-right text-gray-600 italic">
-              {t.yesterdayText(selectedDate)}
-            </p>
-          )}
+
 
           {showSettings ? (
             <div className="text-right">
@@ -158,33 +161,47 @@ export default function Seafdec() {
           ) : (
             <>
               {/* KPI Panels */}
-              <div className="bg-gradient-to-br from-green-200 to-teal-100 rounded-xl p-4 shadow">
-                <p className="text-xl font-bold">{t.Revenue}</p>
-                <p className="text-lg">{t.Today}: {kpi?.day_income ?? '-'} ฿</p>
-                <p className="text-lg">{t.Total}: {kpi?.total_income ?? '-'} ฿</p>
-                <div className="flex items-right gap-2 h-30">
+              {isToday ? (
+                <p className="text-sm text-right text-gray-600 italic">{t.todayText}</p>
+              ) : (
+                <p className="text-sm text-right text-gray-600 italic">
+                  {t.yesterdayText(selectedDate)}
+                </p>
+              )}
+
+              <div className="bg-gradient-to-br from-lightblue rounded-xl p-6 shadow">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="text-2xl font-bold text-textc">{t.Revenue}</p>
+                    <p className="text-xl text-textc">{t.Today}: {kpi?.day_income ?? '-'} ฿</p>
+                    <p className="text-xl text-textc">{t.Total}: {kpi?.total_income ?? '-'} ฿</p>
+                  </div>
                   <img src="/income.png" alt="logo" className="h-20" />
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-green-200 to-teal-100 rounded-xl p-4 shadow">
-                <p className="text-xl font-bold">{t.Yield}</p>
-                <p className="text-lg">{t.Today}: {kpi?.day_power ?? '-'} kWh</p>
-                <p className="text-lg">{t.Month}: {kpi?.month_power ?? '-'} kWh</p>
-                <p className="text-lg">{t.Total}: {kpi?.total_power ?? '-'} kWh</p>
-                <div className="flex items-right gap-2 h-30">
+
+              <div className="bg-gradient-to-br from-lightblue rounded-xl p-6 shadow">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="text-2xl font-bold text-textc">{t.Yield}</p>
+                    <p className="text-xl text-textc">{t.Today}: {kpi?.day_power ?? '-'} kWh</p>
+                    <p className="text-xl text-textc">{t.Month}: {kpi?.month_power ?? '-'} kWh</p>
+                    <p className="text-xl text-textc">{t.Total}: {kpi?.total_power ?? '-'} kWh</p>
+                  </div>
                   <img src="/power.png" alt="logo" className="h-20" />
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-green-200 to-teal-100 rounded-xl p-4 shadow">
-                <p className="text-xl font-bold">{t.env}</p>
-                <p className="text-lg">{t.tree}: {kpi?.equivalent_trees?.toFixed(0) ?? '-'}</p>
-                <div className="flex items-right gap-2 h-30">
+
+              <div className="bg-gradient-to-br from-lightblue rounded-xl p-6 shadow">
+                <div className="flex justify-between items-center mb-2">
+                  <div>
+                    <p className="text-2xl font-bold text-textc">{t.env}</p>
+                    <p className="text-xl text-textc">{t.tree}: {kpi?.equivalent_trees?.toFixed(0) ?? '-'}</p>
+                  </div>
                   <img src="/trees.png" alt="logo" className="h-20" />
                 </div>
-                <p className="text-lg">
-                  {t.co2Avoided}: {kpi?.co2_avoided ? (kpi.co2_avoided / 1000).toFixed(2) : '-'} Tons
-                </p>
-                <div className="flex items-right gap-2 h-30">
+                <div className="flex justify-between items-center">
+                  <p className="text-xl text-textc">{t.co2Avoided}: {kpi?.co2_avoided ? (kpi.co2_avoided / 1000).toFixed(2) : '-'} Tons </p>
                   <img src="/co2.png" alt="logo" className="h-20" />
                 </div>
               </div>
