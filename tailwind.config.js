@@ -7,7 +7,7 @@ export default {
         lightblue: "#e6f5ff", 
         bgblue: "#99FFFF", 
         textc: "#003366",
-        tex: "#333333",
+        blueo: "#99ebff",
       },
     },
   },

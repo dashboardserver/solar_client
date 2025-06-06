@@ -22,7 +22,7 @@ export default function LoginPage() {
 
       localStorage.setItem('token', token);
       localStorage.setItem('username', username);
-      localStorage.setItem('role', role);          
+      localStorage.setItem('role', role);
       localStorage.setItem('dashboard', dashboard);
 
       // ✅ redirect ตาม role/
@@ -39,35 +39,60 @@ export default function LoginPage() {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center flex items-center justify-center"
+      className="min-h-screen bg-cover bg-center relative"
       style={{ backgroundImage: 'url("/solar.png")' }}
     >
-      <div className="bg-white bg-opacity-90 p-10 rounded-xl shadow-xl max-w-sm w-full">
-        <h1 className="text-2xl font-bold mb-6 text-center">Solar Dashboard Login</h1>
-        <form onSubmit={handleLogin} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Username"
-            className="w-full px-4 py-2 border rounded"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
+      {/* Logo - ซ้ายบน */}
+      <div className="absolute top-4 left-4">
+        <img
+          src="solaryn.svg"
+          alt="solaryn"
+          className="h-40"
+        />
+      </div>
+      
+      {/* Login Box - ตรงกลางเว็บ */}
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="bg-white bg-opacity-90 p-10 rounded-xl shadow-xl max-w-sm w-full">
+          <h1 className="text-2xl font-bold mb-6 text-center">Solar Dashboard Login</h1>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <input
+              type="text"
+              placeholder="Username"
+              className="w-full px-4 py-2 border rounded"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              className="w-full px-4 py-2 border rounded"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+            >
+              Login
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {/* Contact - ซ้ายล่าง */}
+      <div className="bg-white absolute bottom-4 left-4 text-white border rounded-xl">
+        <div className="flex items-center">
+          <p className="mt-2 ml-2 text-black">Operated by</p>
+          <img
+            src="/solaryn.svg"
+            alt="solaryn" 
+            className="h-20 absolute left-[90px] mt-2"
           />
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full px-4 py-2 border rounded"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-          >
-            Login
-          </button>
-        </form>
+        </div>
+        <p className="mt-1 mb-2 ml-2 mr-2 text-black">contact 0 2353 8600 Ext. 5504</p>
       </div>
     </div>
   );

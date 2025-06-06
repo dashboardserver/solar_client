@@ -18,9 +18,10 @@ export default function Seafdec() {
       Month: 'เดือน',
       Total: 'รวม',
       Yield: 'พลังงานที่ผลิต',
-      env: 'ประโยชน์ด้านสิ่งแวดล้อม',
       tree: 'เทียบเท่าการปลูกต้นไม้ได้',
       co2Avoided: 'ลดการปล่อย CO₂',
+      trees: 'ต้น',
+      ton: 'ตัน',
       eng: 'อังกฤษ',
       thai: 'ไทย',
       todayText: 'แสดงข้อมูลของวันนี้',
@@ -36,9 +37,10 @@ export default function Seafdec() {
       Month: 'Month',
       Total: 'Total',
       Yield: 'Energy Yield',
-      env: 'Environment',
       tree: 'Equivalent trees planted',
       co2Avoided: 'CO₂ avoided',
+      trees: 'Tree',
+      ton: 'Tons',
       eng: 'ENG',
       thai: 'TH',
       todayText: 'Show today\'s information',
@@ -96,29 +98,57 @@ export default function Seafdec() {
   return (
     <div className="relative w-full min-h-screen">
       <div className="absolute inset-0 bg-gradient-to-b from-sky-300 to-bgblue -z-10" />
-      
+
       {/* Desktop Layout */}
       <div className="hidden md:flex md:flex-row h-screen">
-        <div className="flex-1 overflow-hidden flex items-center justify-center">
-          <div className="flex flex-col items-center gap-2 mt-8">
-            {/* LOGO */}
-            <img
-              src="/seafdeclogo.png"
-              alt="logo"
-              className="h-[120px] object-contain"
-            />
+        <div className="flex-1 overflow-hidden relative min-h-screen flex flex-col">
+          {/* LOGO */}
+          <div className="bg-blueo w-full flex justify-center mt-3">
+            <img src="/seafdeclogo.png" alt="logo" className="h-[120px] object-contain" />
+          </div>
 
-            {/* Structure */}
+          {/* Structure */}
+          <div className="flex-1 flex items-center justify-center">
             <TransformWrapper initialScale={1} minScale={0.5} maxScale={5} centerOnInit>
               <TransformComponent>
-                <img
-                  src="/structure.png"
-                  alt="structure"
-                  className="max-w-full max-h-[calc(100vh-10rem)] object-contain"
-                  draggable={false}
-                />
+                <div className="relative">
+                  <img src="/flag.svg" alt="flag" className="absolute -top-20 left-1/2 transform -translate-x-1/2 z-10" />
+                  <img
+                    src="/structure.png"
+                    alt="structure"
+                    className="max-w-full max-h-[calc(100vh-10rem)] object-contain"
+                    draggable={false}
+                  />
+                </div>
               </TransformComponent>
             </TransformWrapper>
+          </div>
+
+          {/* Contact */}
+          <div className="absolute bottom-2 left-4">
+            <div className="flex items-start">
+              {/* ข้อมูล Contact */}
+              <div className="flex flex-col">
+                <div className="flex items-center -mt-1">
+                  <p className="text-black mt-5">Operated by</p>
+                  <img
+                    src="/solaryn.svg"
+                    alt="solaryn"
+                    className="h-[100px] absolute pl-20 pt-5"
+                  />
+                </div>
+                <p className="text-black">Contact (0) 2353 8600 Ext. 5504</p>
+              </div>
+
+              {/* QR Code */}
+              <div className="flex items-center -ml-5">
+                <img
+                  src="/qr.svg"
+                  alt="qr"
+                  className="h-20"
+                />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -146,13 +176,13 @@ export default function Seafdec() {
               className="group bg-white/80 backdrop-blur-sm text-blue-700 p-2.5 rounded-xl shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300 text-xl font-bold border border-white/20"
               onClick={() => setShowSettings(!showSettings)}
             >
-              {showSettings ? 
-                <span className="group-hover:rotate-90 transition-transform inline-block">✕</span> : 
+              {showSettings ?
+                <span className="group-hover:rotate-90 transition-transform inline-block">✕</span> :
                 <span className="group-hover:rotate-45 transition-transform inline-block">⚙️</span>
               }
             </button>
           </div>
-          
+
           {showSettings ? (
             <div className="animate-fadeIn">
               <div className="bg-white/50 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/30">
@@ -169,7 +199,6 @@ export default function Seafdec() {
                   onClick={handleLogout}
                   className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-4 rounded-xl font-medium hover:from-red-600 hover:to-red-700 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                 >
-                  <span className="text-lg">🚪</span>
                   {t.logout}
                 </button>
               </div>
@@ -185,40 +214,47 @@ export default function Seafdec() {
                 </p>
               )}
 
-              <div className="bg-gradient-to-br from-lightblue rounded-xl p-6 shadow">
-                <div className="flex justify-between items-center">
+              <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
+                <div className="flex items-center">
+                  <img src="/income.svg" alt="logo" className="h-20" />
                   <div>
-                    <p className="text-2xl font-bold text-textc">{t.Revenue}</p>
-                    <p className="text-xl text-textc">{t.Today}: {kpi?.day_income ?? '-'} ฿</p>
-                    <p className="text-xl text-textc">{t.Total}: {kpi?.total_income ?? '-'} ฿</p>
+                    <p className="text-lg font-bold text-textc">{t.Revenue}</p>
+                    <p className="text-sm text-textc">{t.Today}: {kpi?.day_income ?? '-'} ฿</p>
+                    <p className="text-sm text-textc">{t.Total}: {kpi?.total_income ?? '-'} ฿</p>
                   </div>
-                  <img src="/income.png" alt="logo" className="h-20" />
+
                 </div>
               </div>
 
               <div className="bg-gradient-to-br from-lightblue rounded-xl p-6 shadow">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-2xl font-bold text-textc">{t.Yield}</p>
-                    <p className="text-xl text-textc">{t.Today}: {kpi?.day_power ?? '-'} kWh</p>
-                    <p className="text-xl text-textc">{t.Month}: {kpi?.month_power ?? '-'} kWh</p>
-                    <p className="text-xl text-textc">{t.Total}: {kpi?.total_power ?? '-'} kWh</p>
+                <div className="flex items-center mb-2">
+                  <img src="/power.png" alt="logo" className="h-20 pl-2 ml-4" />
+                  <div className="pl-2 ml-6">
+                    <p className="text-lg font-bold text-textc">{t.Yield}</p>
+                    <p className="text-sm text-textc">{t.Today}: {kpi?.day_power ?? '-'} kWh</p>
+                    <p className="text-sm text-textc">{t.Month}: {kpi?.month_power ?? '-'} kWh</p>
+                    <p className="text-sm text-textc">{t.Total}: {kpi?.total_power ?? '-'} kWh</p>
                   </div>
-                  <img src="/power.png" alt="logo" className="h-20" />
                 </div>
               </div>
 
               <div className="bg-gradient-to-br from-lightblue rounded-xl p-6 shadow">
-                <div className="flex justify-between items-center mb-2">
+                <div className="flex items-center mb-2">
+                  <img src="/trees.svg" alt="logo" className="h-20" />
                   <div>
-                    <p className="text-2xl font-bold text-textc">{t.env}</p>
-                    <p className="text-xl text-textc">{t.tree}: {kpi?.equivalent_trees?.toFixed(0) ?? '-'}</p>
+                    <p className="text-xl text-textc">{t.tree}</p>
+                    <p className="text-sm text-textc">{kpi?.equivalent_trees?.toFixed(0) ?? '-'} {t.trees}</p>
                   </div>
-                  <img src="/trees.png" alt="logo" className="h-20" />
                 </div>
-                <div className="flex justify-between items-center">
-                  <p className="text-xl text-textc">{t.co2Avoided}: {kpi?.co2_avoided ? (kpi.co2_avoided / 1000).toFixed(2) : '-'} Tons </p>
-                  <img src="/co2.png" alt="logo" className="h-20" />
+              </div>
+
+              <div className="bg-gradient-to-br from-lightblue rounded-xl p-6 shadow">
+                <div className="flex items-center mb-2">
+                  <img src="/co2.png" alt="logo" className="h-20 pl-2 ml-4" />
+                  <div className="pl-2 ml-6">
+                    <p className="text-xl text-textc">{t.co2Avoided}</p>
+                    <p className="text-sm text-textc">{kpi?.co2_avoided ? (kpi.co2_avoided / 1000).toFixed(2) : '-'} {t.ton}</p>
+                  </div>
                 </div>
               </div>
             </>
@@ -227,28 +263,53 @@ export default function Seafdec() {
       </div>
 
       {/* Mobile Layout */}
-      <div className="md:hidden">
-        {/* Mobile Logo and Structure Section */}
-        <div className="flex flex-col items-center py-6 px-4">
-          {/* LOGO */}
-          <img
-            src="/seafdeclogo.png"
-            alt="logo"
-            className="h-[80px] object-contain mb-4"
-          />
+      <div className="md:hidden flex flex-col min-h-screen">
+        {/* LOGO */}
+        <div className="bg-white w-full flex justify-center pt-4 pb-4 mt-2">
+          <img src="/seafdeclogo.png" alt="logo" className="h-[80px] object-contain" />
+        </div>
 
-          {/* Structure */}
-          <div className="w-full max-w-sm">
-            <TransformWrapper initialScale={0.8} minScale={0.3} maxScale={3} centerOnInit>
-              <TransformComponent>
+        {/* Structure */}
+        <div className="flex-1 flex items-center justify-center p-4">
+          <TransformWrapper initialScale={0.8} minScale={0.3} maxScale={3} centerOnInit>
+            <TransformComponent>
+              <div className="relative">
+                <img src="/flag.svg" alt="flag" className="absolute -top-10 left-1/2 transform -translate-x-1/2 z-10 w-100" />
                 <img
                   src="/structure.png"
                   alt="structure"
-                  className="w-full h-auto object-contain"
+                  className="max-w-full max-h-[calc(100vh-12rem)] object-contain"
                   draggable={false}
                 />
-              </TransformComponent>
-            </TransformWrapper>
+              </div>
+            </TransformComponent>
+          </TransformWrapper>
+        </div>
+
+        {/* Contact */}
+        <div className="w-full p-4">
+          <div className="flex items-center justify-between">
+            {/* ข้อมูล Contact */}
+            <div className="flex flex-col">
+              <div className="flex items-center">
+                <p className="text-black text-sm">Operated by</p>
+                <img
+                  src="/solaryn.svg"
+                  alt="solaryn"
+                  className="h-16 ml-2"
+                />
+              </div>
+              <p className="text-black text-sm mt-1">Contact (0) 2353 8600 Ext. 5504</p>
+            </div>
+
+            {/* QR Code */}
+            <div className="flex items-center">
+              <img
+                src="/qr.svg"
+                alt="qr"
+                className="h-16"
+              />
+            </div>
           </div>
         </div>
 
@@ -276,13 +337,13 @@ export default function Seafdec() {
               className="group bg-white/80 backdrop-blur-sm text-blue-700 p-2 rounded-xl shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300 text-lg font-bold border border-white/20"
               onClick={() => setShowSettings(!showSettings)}
             >
-              {showSettings ? 
-                <span className="group-hover:rotate-90 transition-transform inline-block">✕</span> : 
+              {showSettings ?
+                <span className="group-hover:rotate-90 transition-transform inline-block">✕</span> :
                 <span className="group-hover:rotate-45 transition-transform inline-block">⚙️</span>
               }
             </button>
           </div>
-          
+
           {showSettings ? (
             <div className="animate-fadeIn">
               <div className="bg-white/50 backdrop-blur-lg rounded-2xl p-4 shadow-xl border border-white/30">
@@ -315,41 +376,49 @@ export default function Seafdec() {
               )}
 
               <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
-                <div className="flex justify-between items-center">
+                <div className="flex items-center">
+                  <img src="/income.svg" alt="logo" className="h-20" />
                   <div>
                     <p className="text-lg font-bold text-textc">{t.Revenue}</p>
                     <p className="text-sm text-textc">{t.Today}: {kpi?.day_income ?? '-'} ฿</p>
                     <p className="text-sm text-textc">{t.Total}: {kpi?.total_income ?? '-'} ฿</p>
                   </div>
-                  <img src="/income.png" alt="logo" className="h-12" />
+
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
-                <div className="flex justify-between items-center">
-                  <div>
+              <div className="bg-gradient-to-br from-lightblue rounded-xl p-6 shadow">
+                <div className="flex items-center mb-2">
+                  <img src="/power.png" alt="logo" className="h-20 pl-2 ml-4" />
+                  <div className="pl-2 ml-6">
                     <p className="text-lg font-bold text-textc">{t.Yield}</p>
                     <p className="text-sm text-textc">{t.Today}: {kpi?.day_power ?? '-'} kWh</p>
                     <p className="text-sm text-textc">{t.Month}: {kpi?.month_power ?? '-'} kWh</p>
                     <p className="text-sm text-textc">{t.Total}: {kpi?.total_power ?? '-'} kWh</p>
                   </div>
-                  <img src="/power.png" alt="logo" className="h-12" />
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
-                <div className="flex justify-between items-center mb-2">
+              <div className="bg-gradient-to-br from-lightblue rounded-xl p-6 shadow">
+                <div className="flex items-center mb-2">
+                  <img src="/trees.svg" alt="logo" className="h-20" />
                   <div>
-                    <p className="text-lg font-bold text-textc">{t.env}</p>
-                    <p className="text-sm text-textc">{t.tree}: {kpi?.equivalent_trees?.toFixed(0) ?? '-'}</p>
+                    <p className="text-xl font-bold text-textc">{t.tree}</p>
+                    <p className="text-sm text-textc">{kpi?.equivalent_trees?.toFixed(0) ?? '-'} {t.trees}</p>
                   </div>
-                  <img src="/trees.png" alt="logo" className="h-12" />
-                </div>
-                <div className="flex justify-between items-center">
-                  <p className="text-sm text-textc">{t.co2Avoided}: {kpi?.co2_avoided ? (kpi.co2_avoided / 1000).toFixed(2) : '-'} Tons </p>
-                  <img src="/co2.png" alt="logo" className="h-12" />
                 </div>
               </div>
+
+              <div className="bg-gradient-to-br from-lightblue rounded-xl p-6 shadow">
+                <div className="flex items-center mb-2">
+                  <img src="/co2.png" alt="logo" className="h-20 pl-2 ml-4" />
+                  <div className="pl-2 ml-6">
+                    <p className="text-xl font-bold text-textc">{t.co2Avoided}</p>
+                    <p className="text-sm text-textc">{kpi?.co2_avoided ? (kpi.co2_avoided / 1000).toFixed(2) : '-'} {t.ton}</p>
+                  </div>
+                </div>
+              </div>
+
             </>
           )}
         </div>
