@@ -16,11 +16,16 @@ export default function LoginPage() {
       });
 
       const { token, role, dashboard } = res.data;
+      console.log('🔑 Token:', token);
+      console.log('👤 Role:', role);
+      console.log('📊 Dashboard:', dashboard);
 
       localStorage.setItem('token', token);
       localStorage.setItem('username', username);
+      localStorage.setItem('role', role);          
+      localStorage.setItem('dashboard', dashboard);
 
-      // ✅ redirect ตาม role
+      // ✅ redirect ตาม role/
       if (role === 'admin') {
         navigate('/admin');
       } else {

@@ -21,7 +21,7 @@ export default function Seafdec() {
       env: 'ประโยชน์ด้านสิ่งแวดล้อม',
       tree: 'เทียบเท่าการปลูกต้นไม้ได้',
       co2Avoided: 'ลดการปล่อย CO₂',
-      eng: 'Eng',
+      eng: 'อังกฤษ',
       thai: 'ไทย',
       todayText: 'แสดงข้อมูลของวันนี้',
       yesterdayText: (date) => `แสดงข้อมูลของวันที่ ${date}`,
@@ -97,7 +97,7 @@ export default function Seafdec() {
             <img
               src="/seafdeclogo.png"
               alt="logo"
-              className="h-[150px] object-contain"
+              className="h-[120px] object-contain"
             />
 
             {/* Structure */}
@@ -117,7 +117,7 @@ export default function Seafdec() {
 
 
         {/* KPI Panel */}
-        <div className="w-full md:w-[400px] p-4 flex flex-col gap-4 bg-white/30 backdrop-blur-lg overflow-y-auto shadow">
+        <div className="w-full md:w-[450px] p-4 flex flex-col gap-4 bg-white/30 backdrop-blur-lg overflow-y-auto shadow">
           {/* Header with buttons */}
           <div className="flex justify-end items-center gap-2 h-10">
             <button
