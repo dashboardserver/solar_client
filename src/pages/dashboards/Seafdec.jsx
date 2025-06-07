@@ -107,12 +107,16 @@ export default function Seafdec() {
             <img src="/seafdeclogo.png" alt="logo" className="h-[120px] object-contain" />
           </div>
 
-          {/* Structure */}
-          <div className="flex-1 flex items-center justify-center">
-            <TransformWrapper initialScale={1} minScale={0.5} maxScale={5} centerOnInit>
+          {/* Structure - ขึ้นมาติดกับ Logo */}
+          <div className="flex-1 flex items-start justify-center pt-3">
+            <TransformWrapper initialScale={1} minScale={1} maxScale={10} centerOnInit>
               <TransformComponent>
-                <div className="relative">
-                  <img src="/flag.svg" alt="flag" className="absolute -top-20 left-1/2 transform -translate-x-1/2 z-10" />
+                <div className="relative flex py-8">
+                  <img
+                    src="/flag.svg"
+                    alt="flag"
+                    className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-10 h-100"
+                  />
                   <img
                     src="/structure.png"
                     alt="structure"
@@ -216,7 +220,7 @@ export default function Seafdec() {
 
               <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
                 <div className="flex items-center">
-                  <img src="/income.svg" alt="logo" className="h-20" />
+                  <img src="/income.svg" alt="logo" className="h-16" />
                   <div>
                     <p className="text-lg font-bold text-textc">{t.Revenue}</p>
                     <p className="text-sm text-textc">{t.Today}: {kpi?.day_income ?? '-'} ฿</p>
@@ -226,9 +230,9 @@ export default function Seafdec() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-lightblue rounded-xl p-6 shadow">
+              <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
                 <div className="flex items-center mb-2">
-                  <img src="/power.png" alt="logo" className="h-20 pl-2 ml-4" />
+                  <img src="/power.png" alt="logo" className="h-16 pl-2 ml-4" />
                   <div className="pl-2 ml-6">
                     <p className="text-lg font-bold text-textc">{t.Yield}</p>
                     <p className="text-sm text-textc">{t.Today}: {kpi?.day_power ?? '-'} kWh</p>
@@ -238,21 +242,21 @@ export default function Seafdec() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-lightblue rounded-xl p-6 shadow">
+              <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
                 <div className="flex items-center mb-2">
-                  <img src="/trees.svg" alt="logo" className="h-20" />
+                  <img src="/trees.svg" alt="logo" className="h-16" />
                   <div>
-                    <p className="text-xl text-textc">{t.tree}</p>
+                    <p className="text-lg font-bold text-textc">{t.tree}</p>
                     <p className="text-sm text-textc">{kpi?.equivalent_trees?.toFixed(0) ?? '-'} {t.trees}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-lightblue rounded-xl p-6 shadow">
+              <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
                 <div className="flex items-center mb-2">
-                  <img src="/co2.png" alt="logo" className="h-20 pl-2 ml-4" />
+                  <img src="/co2.png" alt="logo" className="h-16 pl-2 ml-4" />
                   <div className="pl-2 ml-6">
-                    <p className="text-xl text-textc">{t.co2Avoided}</p>
+                    <p className="text-lg font-bold text-textc">{t.co2Avoided}</p>
                     <p className="text-sm text-textc">{kpi?.co2_avoided ? (kpi.co2_avoided / 1000).toFixed(2) : '-'} {t.ton}</p>
                   </div>
                 </div>
@@ -265,16 +269,20 @@ export default function Seafdec() {
       {/* Mobile Layout */}
       <div className="md:hidden flex flex-col min-h-screen">
         {/* LOGO */}
-        <div className="bg-white w-full flex justify-center pt-4 pb-4 mt-2">
+        <div className="bg-blueo w-full flex justify-center mt-3">
           <img src="/seafdeclogo.png" alt="logo" className="h-[80px] object-contain" />
         </div>
 
         {/* Structure */}
-        <div className="flex-1 flex items-center justify-center p-4">
-          <TransformWrapper initialScale={0.8} minScale={0.3} maxScale={3} centerOnInit>
+        <div className="flex-1 flex items-center justify-center pt-3">
+          <TransformWrapper initialScale={1.5} minScale={0.3} maxScale={3} centerOnInit>
             <TransformComponent>
-              <div className="relative">
-                <img src="/flag.svg" alt="flag" className="absolute -top-10 left-1/2 transform -translate-x-1/2 z-10 w-100" />
+              <div className="relative py-16 px-32">
+                <img
+                  src="/flag.svg"
+                  alt="flag"
+                  className="absolute bottom-16 left-1/2 transform -translate-x-1/2 z-10 w-64"
+                />
                 <img
                   src="/structure.png"
                   alt="structure"
@@ -287,27 +295,27 @@ export default function Seafdec() {
         </div>
 
         {/* Contact */}
-        <div className="w-full p-4">
-          <div className="flex items-center justify-between">
+        <div className="bottom-2 left-4">
+          <div className="flex items-start">
             {/* ข้อมูล Contact */}
             <div className="flex flex-col">
-              <div className="flex items-center">
-                <p className="text-black text-sm">Operated by</p>
+              <div className="flex items-center -mt-1">
+                <p className="text-sm text-black mt-5">Operated by</p>
                 <img
                   src="/solaryn.svg"
                   alt="solaryn"
-                  className="h-16 ml-2"
+                  className="h-[90px] absolute pl-16 pt-5"
                 />
               </div>
-              <p className="text-black text-sm mt-1">Contact (0) 2353 8600 Ext. 5504</p>
+              <p className="text-sm text-black">Contact (0) 2353 8600 Ext. 5504</p>
             </div>
 
             {/* QR Code */}
-            <div className="flex items-center">
+            <div className="flex items-center mt-2 -ml-2">
               <img
                 src="/qr.svg"
                 alt="qr"
-                className="h-16"
+                className="h-12"
               />
             </div>
           </div>
@@ -403,7 +411,7 @@ export default function Seafdec() {
                 <div className="flex items-center mb-2">
                   <img src="/trees.svg" alt="logo" className="h-20" />
                   <div>
-                    <p className="text-xl font-bold text-textc">{t.tree}</p>
+                    <p className="text-lg font-bold text-textc">{t.tree}</p>
                     <p className="text-sm text-textc">{kpi?.equivalent_trees?.toFixed(0) ?? '-'} {t.trees}</p>
                   </div>
                 </div>
@@ -413,7 +421,7 @@ export default function Seafdec() {
                 <div className="flex items-center mb-2">
                   <img src="/co2.png" alt="logo" className="h-20 pl-2 ml-4" />
                   <div className="pl-2 ml-6">
-                    <p className="text-xl font-bold text-textc">{t.co2Avoided}</p>
+                    <p className="text-lg font-bold text-textc">{t.co2Avoided}</p>
                     <p className="text-sm text-textc">{kpi?.co2_avoided ? (kpi.co2_avoided / 1000).toFixed(2) : '-'} {t.ton}</p>
                   </div>
                 </div>

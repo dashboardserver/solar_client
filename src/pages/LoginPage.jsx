@@ -42,16 +42,16 @@ export default function LoginPage() {
       className="min-h-screen bg-cover bg-center relative"
       style={{ backgroundImage: 'url("/solar.png")' }}
     >
-      {/* Logo - ซ้ายบน */}
-      <div className="absolute top-4 left-4">
+      {/* Logo */}
+      <div className="absolute left-4">
         <img
           src="solaryn.svg"
           alt="solaryn"
           className="h-40"
         />
       </div>
-      
-      {/* Login Box - ตรงกลางเว็บ */}
+
+      {/* Login Box */}
       <div className="flex items-center justify-center min-h-screen">
         <div className="bg-white bg-opacity-90 p-10 rounded-xl shadow-xl max-w-sm w-full">
           <h1 className="text-2xl font-bold mb-6 text-center">Solar Dashboard Login</h1>
@@ -82,17 +82,17 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Contact - ซ้ายล่าง */}
-      <div className="bg-white absolute bottom-4 left-4 text-white border rounded-xl">
+      {/* Contact */}
+      <div className="bg-white absolute bottom-4 left-4 border rounded-xl">
         <div className="flex items-center">
           <p className="mt-2 ml-2 text-black">Operated by</p>
           <img
             src="/solaryn.svg"
-            alt="solaryn" 
+            alt="solaryn"
             className="h-20 absolute left-[90px] mt-2"
           />
         </div>
-        <p className="mt-1 mb-2 ml-2 mr-2 text-black">contact 0 2353 8600 Ext. 5504</p>
+        <p className="mt-1 mb-2 ml-2 mr-2 text-black">contact (0) 2353 8600 Ext. 5504</p>
       </div>
     </div>
   );
