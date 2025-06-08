@@ -600,7 +600,7 @@ export default function Seafdec() {
                 </TransformWrapper>
 
                 {/* Image Selection Buttons */}
-                <div className="absolute bottom-1/3 left-1/2 transform -translate-x-1/2 z-20">
+                <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-20">
                   <div className="flex gap-2 bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/20">
                     <button
                       onClick={() => setSelectedImage("structure")}
