@@ -632,28 +632,29 @@ export default function Seafdec() {
                     </button>
                   </div>
                 </div>
-              </div>
 
-              {/* Contact */}
-              <div className="absolute bottom-2 left-2">
-                <div className="flex items-start">
-                  <div className="flex flex-col">
-                    <div className="flex items-center -mt-1">
-                      <p className="text-sm text-black mt-3">Operated by</p>
-                      <img
-                        src="/solaryn.svg"
-                        alt="solaryn"
-                        className="h-[70px] absolute pl-16 pt-3"
-                      />
+                {/* Contact */}
+                <div className="absolute bottom-2 left-2">
+                  <div className="flex items-start">
+                    <div className="flex flex-col">
+                      <div className="flex items-center -mt-1">
+                        <p className="text-sm text-black mt-3">Operated by</p>
+                        <img
+                          src="/solaryn.svg"
+                          alt="solaryn"
+                          className="h-[70px] absolute pl-16 pt-3"
+                        />
+                      </div>
+                      <p className="text-sm text-black">
+                        Contact (0) 2353 8600 Ext. 5504
+                      </p>
                     </div>
-                    <p className="text-sm text-black">
-                      Contact (0) 2353 8600 Ext. 5504
-                    </p>
-                  </div>
-                  <div className="flex items-center mt-1 -ml-2">
-                    <img src="/qr.svg" alt="qr" className="h-14" />
+                    <div className="flex items-center mt-1 -ml-2">
+                      <img src="/qr.svg" alt="qr" className="h-14" />
+                    </div>
                   </div>
                 </div>
+                
               </div>
             </div>
 
