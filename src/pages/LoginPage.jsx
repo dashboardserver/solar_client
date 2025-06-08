@@ -5,10 +5,13 @@ import axios from 'axios';
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setErrorMessage(''); // Clear error message ก่อน submit
+    
     try {
       const res = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/auth/login`, {
         username,
@@ -25,7 +28,7 @@ export default function LoginPage() {
       localStorage.setItem('role', role);
       localStorage.setItem('dashboard', dashboard);
 
-      // ✅ redirect ตาม role/
+      // ✅ redirect ตาม role
       if (role === 'admin') {
         navigate('/admin');
       } else {
@@ -33,7 +36,12 @@ export default function LoginPage() {
       }
 
     } catch (err) {
-      alert(err.response?.data?.message || 'Login failed');
+      // แสดง error message ใต้ปุ่ม login
+      if (err.response?.status === 401 || err.response?.status === 400) {
+        setErrorMessage('The Username or Password is Incorrect.\nPlease try again.');
+      } else {
+        setErrorMessage(err.response?.data?.message || 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
+      }
     }
   };
 
@@ -78,6 +86,11 @@ export default function LoginPage() {
             >
               Login
             </button>
+            {errorMessage && (
+              <div className="text-red-500 text-sm text-center mt-2 whitespace-pre-line">
+                {errorMessage}
+              </div>
+            )}
           </form>
         </div>
       </div>

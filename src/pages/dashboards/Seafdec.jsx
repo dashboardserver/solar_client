@@ -394,7 +394,7 @@ export default function Seafdec() {
               </div>
             </div>
           ) : (
-
+            
             <div className="flex flex-col gap-4 flex-1">
               {/* KPI Panels */}
               <p className="text-sm text-right text-gray-600 italic">
@@ -411,13 +411,31 @@ export default function Seafdec() {
                         {!selectedDate ? t.Today : "วัน"}:
                       </p>
                       <p className="text-lg text-textc mr-8">
-                        {kpi?.day_income?.toLocaleString() ?? "-"} {t.bath}
+                        {kpi?.day_income
+                          ? Number(kpi.day_income.toFixed(2)).toLocaleString(
+                              "en-US",
+                              {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              }
+                            )
+                          : "-"}{" "}
+                        {t.bath}
                       </p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-lg text-textc">{t.Total}:</p>
                       <p className="text-lg text-textc mr-8">
-                        {kpi?.total_income?.toLocaleString() ?? "-"} {t.bath}
+                        {kpi?.total_income
+                          ? Number(kpi.total_income.toFixed(2)).toLocaleString(
+                              "en-US",
+                              {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              }
+                            )
+                          : "-"}{" "}
+                        {t.bath}
                       </p>
                     </div>
                   </div>
@@ -435,21 +453,44 @@ export default function Seafdec() {
                         {!selectedDate ? t.Today : "วัน"}:
                       </p>
                       <p className="text-lg text-textc">
-                        {" "}
-                        {kpi?.day_power ?? "-"} {t.kwh}
+                        {kpi?.day_power
+                          ? Number(kpi.day_power.toFixed(2)).toLocaleString(
+                              "en-US",
+                              {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              }
+                            )
+                          : "-"}{" "}
+                        {t.kwh}
                       </p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-lg text-textc">{t.Month}:</p>
                       <p className="text-lg text-textc">
-                        {kpi?.month_power?.toLocaleString() ?? "-"} {t.kwh}
+                        {kpi?.month_power
+                          ? Number(kpi.month_power.toFixed(2)).toLocaleString(
+                              "en-US",
+                              {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              }
+                            )
+                          : "-"}{" "}
+                        {t.kwh}
                       </p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-lg text-textc">{t.Total}:</p>
                       <p className="text-lg text-textc">
                         {kpi?.total_power
-                          ? Number(kpi.total_power.toFixed(2)).toLocaleString()
+                          ? Number(kpi.total_power.toFixed(2)).toLocaleString(
+                              "en-US",
+                              {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              }
+                            )
                           : "-"}{" "}
                         {t.kwh}
                       </p>
@@ -486,7 +527,12 @@ export default function Seafdec() {
                     </p>
                     <p className="text-lg text-textc">
                       {kpi?.co2_avoided
-                        ? (kpi.co2_avoided / 1000).toFixed(2)
+                        ? Number(
+                            (kpi.co2_avoided / 1000).toFixed(2)
+                          ).toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
                         : "-"}{" "}
                       {t.ton}
                     </p>
@@ -674,13 +720,31 @@ export default function Seafdec() {
                         {!selectedDate ? t.Today : "วัน"}:
                       </p>
                       <p className="text-lg text-textc mr-8">
-                        {kpi?.day_income?.toLocaleString() ?? "-"} {t.bath}
+                        {kpi?.day_income
+                          ? Number(kpi.day_income.toFixed(2)).toLocaleString(
+                              "en-US",
+                              {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              }
+                            )
+                          : "-"}{" "}
+                        {t.bath}
                       </p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-lg text-textc">{t.Total}:</p>
                       <p className="text-lg text-textc mr-8">
-                        {kpi?.total_income?.toLocaleString() ?? "-"} {t.bath}
+                        {kpi?.total_income
+                          ? Number(kpi.total_income.toFixed(2)).toLocaleString(
+                              "en-US",
+                              {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              }
+                            )
+                          : "-"}{" "}
+                        {t.bath}
                       </p>
                     </div>
                   </div>
@@ -694,16 +758,51 @@ export default function Seafdec() {
                   <div className="flex-auto ml-4">
                     <p className="text-xl font-bold text-textc">{t.Yield}</p>
                     <div className="flex justify-between ">
-                      <p className="text-lg text-textc">{!selectedDate ? t.Today : 'วัน'}:</p>
-                      <p className="text-lg text-textc"> {kpi?.day_power ?? '-'} {t.kwh}</p>
+                      <p className="text-lg text-textc">
+                        {!selectedDate ? t.Today : "วัน"}:
+                      </p>
+                      <p className="text-lg text-textc">
+                        {kpi?.day_power
+                          ? Number(kpi.day_power.toFixed(2)).toLocaleString(
+                              "en-US",
+                              {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              }
+                            )
+                          : "-"}{" "}
+                        {t.kwh}
+                      </p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-lg text-textc">{t.Month}:</p>
-                      <p className="text-lg text-textc">{kpi?.month_power?.toLocaleString() ?? '-'} {t.kwh}</p>
+                      <p className="text-lg text-textc">
+                        {kpi?.month_power
+                          ? Number(kpi.month_power.toFixed(2)).toLocaleString(
+                              "en-US",
+                              {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              }
+                            )
+                          : "-"}{" "}
+                        {t.kwh}
+                      </p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-lg text-textc">{t.Total}:</p>
-                      <p className="text-lg text-textc">{kpi?.total_power ? Number(kpi.total_power.toFixed(2)).toLocaleString() : '-'} {t.kwh}</p>
+                      <p className="text-lg text-textc">
+                        {kpi?.total_power
+                          ? Number(kpi.total_power.toFixed(2)).toLocaleString(
+                              "en-US",
+                              {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              }
+                            )
+                          : "-"}{" "}
+                        {t.kwh}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -715,7 +814,14 @@ export default function Seafdec() {
                   <img src="/trees.png" alt="logo" className="h-20 pl-2" />
                   <div className="flex-auto ml-4">
                     <p className="text-xl font-bold text-textc">{t.tree}</p>
-                    <p className="text-lg text-textc">{kpi?.equivalent_trees ? Number(kpi.equivalent_trees.toFixed(0)).toLocaleString() : '-'} {t.trees}</p>
+                    <p className="text-lg text-textc">
+                      {kpi?.equivalent_trees
+                        ? Number(
+                            kpi.equivalent_trees.toFixed(0)
+                          ).toLocaleString()
+                        : "-"}{" "}
+                      {t.trees}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -725,8 +831,20 @@ export default function Seafdec() {
                 <div className="flex items-center mb-2">
                   <img src="/co2.png" alt="logo" className="h-20 pl-2" />
                   <div className="flex-auto ml-4">
-                    <p className="text-xl font-bold text-textc">{t.co2Avoided}</p>
-                    <p className="text-lg text-textc">{kpi?.co2_avoided ? (kpi.co2_avoided / 1000).toFixed(2) : '-'} {t.ton}</p>
+                    <p className="text-xl font-bold text-textc">
+                      {t.co2Avoided}
+                    </p>
+                    <p className="text-lg text-textc">
+                      {kpi?.co2_avoided
+                        ? Number(
+                            (kpi.co2_avoided / 1000).toFixed(2)
+                          ).toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
+                        : "-"}{" "}
+                      {t.ton}
+                    </p>
                   </div>
                 </div>
               </div>
