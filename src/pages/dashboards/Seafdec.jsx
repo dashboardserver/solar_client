@@ -601,7 +601,7 @@ export default function Seafdec() {
                 </TransformWrapper>
 
                 {/* Image Selection Buttons */}
-                <div className="absolute left-1/2 transform -translate-x-1/2 z-20">
+                <div className="flex justify-center items-center w-full">
                   <div className="flex gap-2 bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/20">
                     <button
                       onClick={() => setSelectedImage("structure")}
@@ -635,7 +635,7 @@ export default function Seafdec() {
                 </div>
 
                 {/* Contact */}
-                <div className="ml-8">
+                <div className="ml-8 mt-4">
                   <div className="flex items-start">
                     <div className="flex flex-col">
                       <div className="flex items-center -mt-1">
