@@ -550,7 +550,7 @@ export default function Seafdec() {
           <div className="flex flex-1 gap-4 ">
             {/* Structure */}
             <div className="flex-1 flex flex-col relative">
-              {/* LOGO - Now positioned like mobile */}
+              {/* LOGO */}
               <div className="flex justify-center items-center mt-3 mb-4">
                 <img
                   src="/slogo.png"
@@ -564,7 +564,8 @@ export default function Seafdec() {
                 />
               </div>
 
-              <div className="flex-1 flex items-center justify-center relative">
+              {/* structure */}
+              <div className="flex-col justify-center relative">
                 <TransformWrapper
                   initialScale={1}
                   minScale={0}
@@ -600,7 +601,7 @@ export default function Seafdec() {
                 </TransformWrapper>
 
                 {/* Image Selection Buttons */}
-                <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-20">
+                <div className="absolute left-1/2 transform -translate-x-1/2 z-20">
                   <div className="flex gap-2 bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/20">
                     <button
                       onClick={() => setSelectedImage("structure")}
@@ -634,7 +635,7 @@ export default function Seafdec() {
                 </div>
 
                 {/* Contact */}
-                <div className="absolute bottom-2 left-2">
+                <div className="ml-8">
                   <div className="flex items-start">
                     <div className="flex flex-col">
                       <div className="flex items-center -mt-1">
@@ -654,7 +655,6 @@ export default function Seafdec() {
                     </div>
                   </div>
                 </div>
-                
               </div>
             </div>
 
