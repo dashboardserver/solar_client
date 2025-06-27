@@ -232,8 +232,8 @@ export default function Seafdec() {
           <div className="flex-1 flex items-start justify-center pt-3 relative">
             <TransformWrapper
               initialScale={1}
-              minScale={0}
-              maxScale={10}
+              minScale={0.3}
+              maxScale={1}
               centerOnInit
             >
               <TransformComponent>
@@ -568,8 +568,8 @@ export default function Seafdec() {
               <div className="flex-col justify-center relative">
                 <TransformWrapper
                   initialScale={1}
-                  minScale={0}
-                  maxScale={10}
+                  minScale={0.3}
+                  maxScale={1}
                   centerOnInit
                 >
                   <TransformComponent>
@@ -738,7 +738,7 @@ export default function Seafdec() {
                   <div className="bg-gradient-to-br from-lightblue rounded-xl p-3 shadow">
                     <div className="flex items-center">
                       <img src="/income.png" alt="logo" className="h-16 ml-2" />
-                      <div className="flex-auto ml-4">
+                      <div className="flex-auto ml-4 pr-16">
                         <p className="text-lg font-bold text-textc">
                           {t.Revenue}
                         </p>
@@ -780,7 +780,7 @@ export default function Seafdec() {
                   <div className="bg-gradient-to-br from-lightblue rounded-xl p-3 shadow">
                     <div className="flex items-center">
                       <img src="/power.png" alt="logo" className="h-16 ml-2" />
-                      <div className="flex-auto ml-4">
+                      <div className="flex-auto ml-4 pr-9">
                         <p className="text-lg font-bold text-textc">
                           {t.Yield}
                         </p>
@@ -900,8 +900,8 @@ export default function Seafdec() {
         <div className="flex-1 flex justify-center items-center pt-3">
           <TransformWrapper
             initialScale={1}
-            minScale={0}
-            maxScale={10}
+            minScale={0.3}
+            maxScale={1}
             centerOnInit
           >
             <TransformComponent>
