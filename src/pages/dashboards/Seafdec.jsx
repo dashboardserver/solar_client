@@ -205,7 +205,7 @@ export default function Seafdec() {
   };
 
   return (
-    <div className="relative w-full min-h-screen">
+    <div className="relative w-full h-full">
       <div className="absolute inset-0 bg-gradient-to-b from-sky-300 to-bgblue -z-10" />
 
       {/* Date Picker Modal */}
@@ -229,7 +229,7 @@ export default function Seafdec() {
           </div>
 
           {/* Structure */}
-          <div className="flex-1 flex items-start justify-center pt-3 relative">
+          <div className="flex-1 flex items-start justify-center relative">
             <TransformWrapper
               initialScale={1}
               minScale={0.3}
@@ -252,11 +252,11 @@ export default function Seafdec() {
                     />
                   </div>
                 ) : (
-                  <div className="relative flex py-8 px-32">
+                  <div className="relative flex justify-center items-center">
                     <img
                       src="/map.png"
                       alt="map"
-                      className="max-w-full max-h-[calc(100vh-10rem)] object-contain"
+                      className="max-w-full max-h-[calc(90vh-10rem)] object-contain"
                       draggable={false}
                     />
                   </div>
@@ -588,7 +588,7 @@ export default function Seafdec() {
                         />
                       </div>
                     ) : (
-                      <div className="relative flex justify-center items-center py-4 px-16">
+                      <div className="relative flex justify-center items-center">
                         <img
                           src="/map.png"
                           alt="map"
@@ -883,7 +883,7 @@ export default function Seafdec() {
       {/* Mobile Layout */}
       <div className="md:hidden flex flex-col min-h-screen">
         {/* LOGO */}
-        <div className=" flex justify-start items-center mt-4">
+        <div className=" flex justify-center items-center mt-4">
           <img
             src="/slogo.png"
             alt="logo"
@@ -901,7 +901,7 @@ export default function Seafdec() {
           <TransformWrapper
             initialScale={1}
             minScale={0.3}
-            maxScale={1.5}
+            maxScale={1}
             centerOnInit
           >
             <TransformComponent>
@@ -920,7 +920,7 @@ export default function Seafdec() {
                   />
                 </div>
               ) : (
-                <div className="flex justify-center items-center py-8 px-16">
+                <div className="relative flex justify-center items-center">
                   <img
                     src="/map.png"
                     alt="map"
