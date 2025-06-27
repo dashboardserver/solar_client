@@ -256,7 +256,7 @@ export default function Seafdec() {
                     <img
                       src="/map.png"
                       alt="map"
-                      className="max-w-full max-h-[calc(80vh-10rem)] object-contain"
+                      className="max-w-full max-h-[calc(100vh-10rem)] object-contain"
                       draggable={false}
                     />
                   </div>
@@ -901,7 +901,7 @@ export default function Seafdec() {
           <TransformWrapper
             initialScale={1}
             minScale={0.3}
-            maxScale={1}
+            maxScale={1.5}
             centerOnInit
           >
             <TransformComponent>
