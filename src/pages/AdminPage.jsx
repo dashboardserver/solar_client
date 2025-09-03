@@ -30,7 +30,7 @@ export default function AdminPage() {
     }
   };
 
-  // ✅ ตรวจสอบ authentication และ authorization
+  // ตรวจสอบ authentication และ authorization
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -46,7 +46,7 @@ export default function AdminPage() {
         console.log('Role:', storedRole);
         console.log('Dashboard:', storedDashboard);
 
-        // ✅ ตรวจสอบข้อมูลพื้นฐานจาก localStorage
+        // ตรวจสอบข้อมูลพื้นฐานจาก localStorage
         if (!token || !storedUsername) {
           console.warn('[ADMIN] Missing token or username. Redirecting to login...');
           localStorage.clear();
@@ -54,7 +54,7 @@ export default function AdminPage() {
           return;
         }
 
-        // ✅ ตรวจสอบ role อย่างเข้มงวด - ต้องเป็น 'admin' เท่านั้น
+        // ตรวจสอบ role อย่างเข้มงวด - ต้องเป็น 'admin' เท่านั้น
         if (!storedRole || storedRole !== 'admin') {
           console.warn('[ADMIN] Invalid role. Expected: admin, Got:', storedRole);
           alert('Access denied. This page is for administrators only.');
@@ -63,13 +63,13 @@ export default function AdminPage() {
           return;
         }
 
-        // ✅ ตรวจสอบเพิ่มเติม: admin ควรมี dashboard เป็น null หรือ 'admin'
+        // ตรวจสอบเพิ่มเติม: admin ควรมี dashboard เป็น null หรือ 'admin'
         if (storedDashboard && storedDashboard !== 'admin' && storedDashboard !== null) {
           console.warn('[ADMIN] Admin should not have specific dashboard assigned. Dashboard:', storedDashboard);
           // ไม่ redirect ในกรณีนี้ เพราะอาจเป็น admin ที่มี dashboard assigned
         }
 
-        // ✅ ตรวจสอบกับ backend เพื่อยืนยันสิทธิ์
+        // ตรวจสอบกับ backend เพื่อยืนยันสิทธิ์
         console.log('🔄 Verifying admin privileges with backend...');
         const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/auth/list-users`, {
           headers: {
@@ -84,7 +84,7 @@ export default function AdminPage() {
       } catch (err) {
         console.error('[ADMIN] Authorization failed:', err);
         
-        // ✅ จัดการ error แบบเข้มงวด
+        // จัดการ error แบบเข้มงวด
         let errorMessage = 'Access denied. Please login again.';
         
         if (err.response?.status === 401) {
@@ -97,7 +97,7 @@ export default function AdminPage() {
         
         alert(errorMessage);
         
-        // ✅ เคลียร์ข้อมูลทั้งหมดและ redirect
+        // เคลียร์ข้อมูลทั้งหมดและ redirect
         localStorage.clear();
         navigate('/');
         return;
@@ -164,7 +164,7 @@ export default function AdminPage() {
     navigate(`/dashboard/${target}`);
   };
 
-  // ✅ ยังไม่ตรวจเสร็จก็ไม่ render - ป้องกันไม่ให้เห็นเนื้อหา
+  // ยังไม่ตรวจเสร็จก็ไม่ render - ป้องกันไม่ให้เห็นเนื้อหา
   if (!isAuthChecked) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -180,7 +180,7 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        {/* ✅ Header แสดงสถานะ admin */}
+        {/* Header แสดงสถานะ admin */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex justify-between items-center">
             <div>

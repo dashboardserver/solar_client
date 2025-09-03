@@ -2,14 +2,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-
-/**
- * NOTE:
- * - ถ้าไม่เลือกวันที่ (selectedDate === "") => เรียก /api/seafdec/today
- * - ถ้าเลือกวันที่ (YYYY-MM-DD)          => เรียก /api/seafdec/by-date?date=YYYY-MM-DD
- * - โหมด "วันนี้" จะพยายามแสดงวันที่จริงจาก DB (kpi.date) เช่น (แสดงข้อมูลของวันนี้ (04/09/2025))
- */
-
 export default function Seafdec() {
   const navigate = useNavigate();
 
@@ -21,7 +13,7 @@ export default function Seafdec() {
 
   // Data States
   const [kpi, setKpi] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(""); // "" = วันนี้
+  const [selectedDate, setSelectedDate] = useState(""); 
 
   // Language
   const [language, setLanguage] = useState("th");
@@ -75,22 +67,20 @@ export default function Seafdec() {
         confirm: "Confirm",
         cancel: "Cancel",
       },
-    }[language]; // โครงข้อความเดิมคงไว้ครบถ้วน :contentReference[oaicite:1]{index=1}
+    }[language]; 
 
-  // Auth guard (เหมือนเดิม)
+  // Auth guard
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) window.location.href = "/";
-  }, []); // :contentReference[oaicite:2]{index=2}
+  }, []);
 
-  // Helpers
   const formatDateForDisplay = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
     return date.toLocaleDateString(language === "th" ? "th-TH" : "en-US");
   };
 
-  // ✅ ดึง KPI: ใช้ endpoint ใหม่ /today หรือ /by-date
   const fetchKPI = useCallback(async () => {
     try {
       const base = process.env.REACT_APP_API_BASE_URL;
@@ -109,30 +99,29 @@ export default function Seafdec() {
 
   useEffect(() => {
     fetchKPI();
-  }, [fetchKPI]); // โครงเดิมเรียก fetch ใน useEffect คงไว้ :contentReference[oaicite:3]{index=3}
+  }, [fetchKPI]);
 
   const handleLogout = () => {
     localStorage.clear();
     navigate("/");
   };
 
-  // เปิด modal เลือกวันที่
+  // select date
   const handleDateModeChange = () => setShowDatePicker(true);
 
-  // จาก modal: ยืนยัน/ยกเลิก
   const handleCustomDateConfirm = (date) => {
-    setSelectedDate(date); // "" = โหมดวันนี้
+    setSelectedDate(date);
     setShowDatePicker(false);
   };
   const handleCustomDateCancel = () => setShowDatePicker(false);
 
-  // ภาษา
+  // language
   const handleLanguageSelect = (selectedLanguage) => {
     setLanguage(selectedLanguage);
     setShowLanguageOptions(false);
   };
 
-  // ✅ ข้อความวันที่มุมขวา: ถ้าโหมดวันนี้ และ DB ส่ง kpi.date มา ให้โชว์วงเล็บวันที่จาก DB
+  // ข้อความวันที่
   const getDateDisplayText = () => {
     if (!selectedDate) {
       return kpi?.date
@@ -141,9 +130,9 @@ export default function Seafdec() {
     } else {
       return t.dateText(formatDateForDisplay(selectedDate));
     }
-  }; // เดิมใช้ todayText/dateText เหมือนกัน แต่เพิ่มการแสดง kpi.date เมื่อเป็นโหมดวันนี้ :contentReference[oaicite:4]{index=4}
+  };
 
-  // ====== Components ======
+  // Components 
   const DatePickerModal = () => {
     const [tempDate, setTempDate] = useState(
       selectedDate || new Date().toISOString().split("T")[0]
@@ -171,7 +160,7 @@ export default function Seafdec() {
             <button
               onClick={() => {
                 if (tempDate === new Date().toISOString().split("T")[0]) {
-                  // เลือกวันนี้ -> กลับเป็นโหมดล่าสุด/วันนี้ (selectedDate = "")
+                  // เลือกวันนี้ - กลับเป็นวันล่าสุด
                   handleCustomDateConfirm("");
                 } else {
                   handleCustomDateConfirm(tempDate);
@@ -185,7 +174,7 @@ export default function Seafdec() {
         </div>
       </div>
     );
-  }; // โครง modal อ้างอิงของเดิม :contentReference[oaicite:5]{index=5}
+  };
 
   const LanguageOptions = () => (
     <div className="absolute top-full right-0 mt-2 bg-white/90 backdrop-blur-lg rounded-xl shadow-xl border border-white/30 overflow-hidden z-40">
@@ -210,9 +199,9 @@ export default function Seafdec() {
         ENG
       </button>
     </div>
-  ); // โครงเดิมคงไว้ :contentReference[oaicite:6]{index=6}
+  ); 
 
-  // ====== Render ======
+  // Render 
   return (
     <div className="relative w-full h-full">
       <div className="absolute inset-0 bg-gradient-to-b from-sky-300 to-bgblue -z-10" />

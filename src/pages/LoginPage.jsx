@@ -28,7 +28,7 @@ export default function LoginPage() {
       localStorage.setItem('role', role);
       localStorage.setItem('dashboard', dashboard);
 
-      // ✅ redirect ตาม role
+      // redirect ตาม role
       if (role === 'admin') {
         navigate('/admin');
       } else {
