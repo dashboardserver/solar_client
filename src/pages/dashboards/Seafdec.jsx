@@ -1,87 +1,104 @@
+// src/pages/Seafdec.jsx
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
+/**
+ * NOTE:
+ * - ถ้าไม่เลือกวันที่ (selectedDate === "") => เรียก /api/seafdec/today
+ * - ถ้าเลือกวันที่ (YYYY-MM-DD)          => เรียก /api/seafdec/by-date?date=YYYY-MM-DD
+ * - โหมด "วันนี้" จะพยายามแสดงวันที่จริงจาก DB (kpi.date) เช่น (แสดงข้อมูลของวันนี้ (04/09/2025))
+ */
+
 export default function Seafdec() {
   const navigate = useNavigate();
+
+  // UI States
   const [showSettings, setShowSettings] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showLanguageOptions, setShowLanguageOptions] = useState(false);
   const [selectedImage, setSelectedImage] = useState("structure");
-  const [kpi, setKpi] = useState(null);
-  const [selectedDate, setSelectedDate] = useState("");
-  const [language, setLanguage] = useState("th");
-  const t = {
-    th: {
-      Revenue: "ประหยัดค่าไฟฟ้า",
-      Today: "วันนี้",
-      Yesterday: "เมื่อวาน",
-      Month: "เดือน",
-      Total: "รวม",
-      Yield: "พลังงานที่ผลิต",
-      tree: "เทียบเท่าการปลูกต้นไม้ได้",
-      co2Avoided: "ลดการปล่อย CO₂",
-      trees: "ต้น",
-      kwh: "กิโลวัตต์",
-      ton: "ตัน",
-      bath: "บาท",
-      eng: "อังกฤษ",
-      thai: "ไทย",
-      todayText: "แสดงข้อมูลของวันนี้",
-      dateText: (date) => `แสดงข้อมูลของวันที่ ${date}`,
-      name: "ชื่อ",
-      status: "สถานะ",
-      logout: "ออกจากระบบ",
-      selectDate: "เลือกวันที่",
-      confirm: "ยืนยัน",
-      cancel: "ยกเลิก",
-    },
-    en: {
-      Revenue: "Save electricity cost",
-      Today: "Today",
-      Yesterday: "Yesterday",
-      Month: "Month",
-      Total: "Total",
-      Yield: "Energy Yield",
-      tree: "Equivalent trees planted",
-      co2Avoided: "CO₂ avoided",
-      trees: "Trees",
-      kwh: "KWh",
-      ton: "Tons",
-      bath: "฿",
-      eng: "ENG",
-      thai: "ไทย",
-      todayText: "Show today's information",
-      dateText: (date) => `Show information of the date ${date}`,
-      name: "Name",
-      status: "Status",
-      logout: "Logout",
-      selectDate: "Select Date",
-      confirm: "Confirm",
-      cancel: "Cancel",
-    },
-  }[language];
 
+  // Data States
+  const [kpi, setKpi] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(""); // "" = วันนี้
+
+  // Language
+  const [language, setLanguage] = useState("th");
+  const t =
+    {
+      th: {
+        Revenue: "ประหยัดค่าไฟฟ้า",
+        Today: "วันนี้",
+        Yesterday: "เมื่อวาน",
+        Month: "เดือน",
+        Total: "รวม",
+        Yield: "พลังงานที่ผลิต",
+        tree: "เทียบเท่าการปลูกต้นไม้ได้",
+        co2Avoided: "ลดการปล่อย CO₂",
+        trees: "ต้น",
+        kwh: "กิโลวัตต์",
+        ton: "ตัน",
+        bath: "บาท",
+        eng: "อังกฤษ",
+        thai: "ไทย",
+        todayText: "แสดงข้อมูลของวันนี้",
+        dateText: (date) => `แสดงข้อมูลของวันที่ ${date}`,
+        name: "ชื่อ",
+        status: "สถานะ",
+        logout: "ออกจากระบบ",
+        selectDate: "เลือกวันที่",
+        confirm: "ยืนยัน",
+        cancel: "ยกเลิก",
+      },
+      en: {
+        Revenue: "Save electricity cost",
+        Today: "Today",
+        Yesterday: "Yesterday",
+        Month: "Month",
+        Total: "Total",
+        Yield: "Energy Yield",
+        tree: "Equivalent trees planted",
+        co2Avoided: "CO₂ avoided",
+        trees: "Trees",
+        kwh: "KWh",
+        ton: "Tons",
+        bath: "฿",
+        eng: "ENG",
+        thai: "ไทย",
+        todayText: "Show today's information",
+        dateText: (date) => `Show information of the date ${date}`,
+        name: "Name",
+        status: "Status",
+        logout: "Logout",
+        selectDate: "Select Date",
+        confirm: "Confirm",
+        cancel: "Cancel",
+      },
+    }[language]; // โครงข้อความเดิมคงไว้ครบถ้วน :contentReference[oaicite:1]{index=1}
+
+  // Auth guard (เหมือนเดิม)
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      window.location.href = "/";
-    }
-  }, []);
+    if (!token) window.location.href = "/";
+  }, []); // :contentReference[oaicite:2]{index=2}
 
-  // Default to today's data (empty selectedDate means latest/today)
-  useEffect(() => {
-    if (!selectedDate) {
-      // If no date is selected, show today's data
-    }
-  }, [selectedDate]);
+  // Helpers
+  const formatDateForDisplay = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString(language === "th" ? "th-TH" : "en-US");
+  };
 
+  // ✅ ดึง KPI: ใช้ endpoint ใหม่ /today หรือ /by-date
   const fetchKPI = useCallback(async () => {
     try {
+      const base = process.env.REACT_APP_API_BASE_URL;
       const url = selectedDate
-        ? `${process.env.REACT_APP_API_BASE_URL}/api/seafdec/kpi/${selectedDate}`
-        : `${process.env.REACT_APP_API_BASE_URL}/api/seafdec/kpi/latest`;
+        ? `${base}/api/seafdec/by-date?date=${selectedDate}`
+        : `${base}/api/seafdec/today`;
       const res = await fetch(url);
+      if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
       setKpi(data);
     } catch (err) {
@@ -92,51 +109,45 @@ export default function Seafdec() {
 
   useEffect(() => {
     fetchKPI();
-  }, [fetchKPI]);
+  }, [fetchKPI]); // โครงเดิมเรียก fetch ใน useEffect คงไว้ :contentReference[oaicite:3]{index=3}
 
   const handleLogout = () => {
     localStorage.clear();
     navigate("/");
   };
 
-  const handleDateModeChange = () => {
-    setShowDatePicker(true);
-  };
+  // เปิด modal เลือกวันที่
+  const handleDateModeChange = () => setShowDatePicker(true);
 
+  // จาก modal: ยืนยัน/ยกเลิก
   const handleCustomDateConfirm = (date) => {
-    setSelectedDate(date);
+    setSelectedDate(date); // "" = โหมดวันนี้
     setShowDatePicker(false);
   };
+  const handleCustomDateCancel = () => setShowDatePicker(false);
 
-  const handleCustomDateCancel = () => {
-    setShowDatePicker(false);
-  };
-
+  // ภาษา
   const handleLanguageSelect = (selectedLanguage) => {
     setLanguage(selectedLanguage);
     setShowLanguageOptions(false);
   };
 
-  const formatDateForDisplay = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString(language === "th" ? "th-TH" : "en-US");
-  };
-
+  // ✅ ข้อความวันที่มุมขวา: ถ้าโหมดวันนี้ และ DB ส่ง kpi.date มา ให้โชว์วงเล็บวันที่จาก DB
   const getDateDisplayText = () => {
     if (!selectedDate) {
-      return t.todayText;
+      return kpi?.date
+        ? `${t.todayText} (${formatDateForDisplay(kpi.date)})`
+        : t.todayText;
     } else {
       return t.dateText(formatDateForDisplay(selectedDate));
     }
-  };
+  }; // เดิมใช้ todayText/dateText เหมือนกัน แต่เพิ่มการแสดง kpi.date เมื่อเป็นโหมดวันนี้ :contentReference[oaicite:4]{index=4}
 
-  // Date Picker Component
+  // ====== Components ======
   const DatePickerModal = () => {
     const [tempDate, setTempDate] = useState(
       selectedDate || new Date().toISOString().split("T")[0]
     );
-
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl p-6 shadow-2xl max-w-sm w-full">
@@ -160,7 +171,7 @@ export default function Seafdec() {
             <button
               onClick={() => {
                 if (tempDate === new Date().toISOString().split("T")[0]) {
-                  // If today is selected, set selectedDate to empty (shows latest data)
+                  // เลือกวันนี้ -> กลับเป็นโหมดล่าสุด/วันนี้ (selectedDate = "")
                   handleCustomDateConfirm("");
                 } else {
                   handleCustomDateConfirm(tempDate);
@@ -174,36 +185,34 @@ export default function Seafdec() {
         </div>
       </div>
     );
-  };
+  }; // โครง modal อ้างอิงของเดิม :contentReference[oaicite:5]{index=5}
 
-  // Language Options Component
-  const LanguageOptions = () => {
-    return (
-      <div className="absolute top-full right-0 mt-2 bg-white/90 backdrop-blur-lg rounded-xl shadow-xl border border-white/30 overflow-hidden z-40">
-        <button
-          onClick={() => handleLanguageSelect("th")}
-          className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${
-            language === "th"
-              ? "bg-blue-100 text-blue-700 font-semibold"
-              : "text-gray-700"
-          }`}
-        >
-          ไทย
-        </button>
-        <button
-          onClick={() => handleLanguageSelect("en")}
-          className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${
-            language === "en"
-              ? "bg-blue-100 text-blue-700 font-semibold"
-              : "text-gray-700"
-          }`}
-        >
-          ENG
-        </button>
-      </div>
-    );
-  };
+  const LanguageOptions = () => (
+    <div className="absolute top-full right-0 mt-2 bg-white/90 backdrop-blur-lg rounded-xl shadow-xl border border-white/30 overflow-hidden z-40">
+      <button
+        onClick={() => handleLanguageSelect("th")}
+        className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${
+          language === "th"
+            ? "bg-blue-100 text-blue-700 font-semibold"
+            : "text-gray-700"
+        }`}
+      >
+        ไทย
+      </button>
+      <button
+        onClick={() => handleLanguageSelect("en")}
+        className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${
+          language === "en"
+            ? "bg-blue-100 text-blue-700 font-semibold"
+            : "text-gray-700"
+        }`}
+      >
+        ENG
+      </button>
+    </div>
+  ); // โครงเดิมคงไว้ :contentReference[oaicite:6]{index=6}
 
+  // ====== Render ======
   return (
     <div className="relative w-full h-full">
       <div className="absolute inset-0 bg-gradient-to-b from-sky-300 to-bgblue -z-10" />
@@ -213,29 +222,17 @@ export default function Seafdec() {
 
       {/* Desktop Layout */}
       <div className="hidden xl:flex xl:flex-row h-screen">
+        {/* Left: Structure/Map */}
         <div className="flex-1 relative min-h-screen flex flex-col">
           {/* LOGO */}
           <div className="w-full flex justify-center mt-3">
-            <img
-              src="/slogo.png"
-              alt="logo"
-              className="h-[120px] object-contain "
-            />
-            <img
-              src="/seafdeclogo.png"
-              alt="logo"
-              className="h-[120px] object-contain"
-            />
+            <img src="/slogo.png" alt="logo" className="h-[120px] object-contain " />
+            <img src="/seafdeclogo.png" alt="logo" className="h-[120px] object-contain" />
           </div>
 
-          {/* Structure */}
+          {/* Structure / Map */}
           <div className="flex-1 flex items-start justify-center relative">
-            <TransformWrapper
-              initialScale={1}
-              minScale={0.3}
-              maxScale={1}
-              centerOnInit
-            >
+            <TransformWrapper initialScale={1} minScale={0.3} maxScale={1} centerOnInit>
               <TransformComponent>
                 {selectedImage === "structure" ? (
                   <div className="relative flex py-8">
@@ -247,7 +244,7 @@ export default function Seafdec() {
                     <img
                       src="/structure.png"
                       alt="structure"
-                      className="max-w-full max-h-[calc(100vh-10rem)] object-contain"
+                      className="max-w-full max-h=[calc(100vh-10rem)] object-contain"
                       draggable={false}
                     />
                   </div>
@@ -270,30 +267,18 @@ export default function Seafdec() {
                 <button
                   onClick={() => setSelectedImage("structure")}
                   className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${
-                    selectedImage === "structure"
-                      ? "border-blue-500 bg-blue-100"
-                      : "border-transparent"
+                    selectedImage === "structure" ? "border-blue-500 bg-blue-100" : "border-transparent"
                   }`}
                 >
-                  <img
-                    src="/structure.png"
-                    alt="structure"
-                    className="h-8 w-8 object-contain"
-                  />
+                  <img src="/structure.png" alt="structure" className="h-8 w-8 object-contain" />
                 </button>
                 <button
                   onClick={() => setSelectedImage("map")}
                   className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${
-                    selectedImage === "map"
-                      ? "border-blue-500 bg-blue-100"
-                      : "border-transparent"
+                    selectedImage === "map" ? "border-blue-500 bg-blue-100" : "border-transparent"
                   }`}
                 >
-                  <img
-                    src="/map.png"
-                    alt="map"
-                    className="h-8 w-8 object-contain"
-                  />
+                  <img src="/map.png" alt="map" className="h-8 w-8 object-contain" />
                 </button>
               </div>
             </div>
@@ -302,20 +287,13 @@ export default function Seafdec() {
           {/* Contact */}
           <div className="absolute bottom-2 left-4">
             <div className="flex items-start">
-              {/* ข้อมูล Contact */}
               <div className="flex flex-col">
                 <div className="flex items-center -mt-1">
                   <p className="text-black mt-5">Operated by</p>
-                  <img
-                    src="/solaryn.svg"
-                    alt="solaryn"
-                    className="h-[100px] absolute pl-20 pt-5"
-                  />
+                  <img src="/solaryn.svg" alt="solaryn" className="h-[100px] absolute pl-20 pt-5" />
                 </div>
                 <p className="text-black">Contact (0) 2353 8600 Ext. 5504</p>
               </div>
-
-              {/* QR Code */}
               <div className="flex items-center -ml-5">
                 <img src="/qr.svg" alt="qr" className="h-20" />
               </div>
@@ -323,54 +301,43 @@ export default function Seafdec() {
           </div>
         </div>
 
-        {/* KPI Panel - Desktop */}
+        {/* Right: KPI Panel (Desktop) */}
         <div className="w-[500px] p-6 flex flex-col gap-4 bg-white/20 backdrop-blur-xl shadow-2xl border-l border-white/30 h-screen">
           {/* Header */}
           <div className="flex justify-end items-center gap-3 h-auto">
-            {/* button calender */}
+            {/* Calendar */}
             <button
               onClick={handleDateModeChange}
               className="group bg-white/80 backdrop-blur-sm text-blue-700 p-2.5 rounded-xl shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300 border border-white/20"
             >
-              <img
-                src="/calendar.png"
-                alt="calendar"
-                className="h-5 w-5 group-hover:scale-110 transition-transform"
-              />
+              <img src="/calendar.png" alt="calendar" className="h-5 w-5 group-hover:scale-110 transition-transform" />
             </button>
 
+            {/* Language */}
             <div className="relative">
-              {/* button language */}
               <button
                 onClick={() => setShowLanguageOptions(!showLanguageOptions)}
                 className="group bg-white/80 backdrop-blur-sm text-blue-700 p-2.5 rounded-xl shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300 border border-white/20"
               >
-                <img
-                  src="/language.png"
-                  alt="lang"
-                  className="h-5 w-5 group-hover:scale-110 transition-transform"
-                />
+                <img src="/language.png" alt="lang" className="h-5 w-5 group-hover:scale-110 transition-transform" />
               </button>
               {showLanguageOptions && <LanguageOptions />}
             </div>
 
-            {/* button setting */}
+            {/* Settings */}
             <button
               className="group bg-white/80 backdrop-blur-sm text-blue-700 p-2.5 rounded-xl shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300 text-xl font-bold border border-white/20"
               onClick={() => setShowSettings(!showSettings)}
             >
               {showSettings ? (
-                <span className="group-hover:rotate-90 transition-transform inline-block">
-                  ✕
-                </span>
+                <span className="group-hover:rotate-90 transition-transform inline-block">✕</span>
               ) : (
-                <span className="group-hover:rotate-45 transition-transform inline-block">
-                  ⚙️
-                </span>
+                <span className="group-hover:rotate-45 transition-transform inline-block">⚙️</span>
               )}
             </button>
           </div>
 
+          {/* Body */}
           {showSettings ? (
             <div className="animate-fadeIn">
               <div className="bg-white/50 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/30">
@@ -381,9 +348,7 @@ export default function Seafdec() {
                   <p className="text-lg font-semibold text-blue-900 mb-1">
                     {t.name} : {localStorage.getItem("username")}
                   </p>
-                  <p className="text-sm text-blue-600">
-                    {t.status} : {localStorage.getItem("role")}
-                  </p>
+                  <p className="text-sm text-blue-600">{t.status} : {localStorage.getItem("role")}</p>
                 </div>
                 <button
                   onClick={handleLogout}
@@ -395,10 +360,8 @@ export default function Seafdec() {
             </div>
           ) : (
             <div className="flex flex-col gap-4 flex-1">
-              {/* KPI Panels */}
-              <p className="text-sm text-right text-gray-600 italic">
-                {getDateDisplayText()}
-              </p>
+              <p className="text-sm text-right text-gray-600 italic">{getDateDisplayText()}</p>
+
               {/* Revenue */}
               <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
                 <div className="flex items-center">
@@ -406,18 +369,13 @@ export default function Seafdec() {
                   <div className="flex-auto ml-8 mr-16">
                     <p className="text-xl font-bold text-textc">{t.Revenue}</p>
                     <div className="flex justify-between">
-                      <p className="text-lg text-textc">
-                        {!selectedDate ? t.Today : "วัน"}:
-                      </p>
+                      <p className="text-lg text-textc">{!selectedDate ? t.Today : "วัน"}:</p>
                       <p className="text-lg text-textc mr-8">
                         {kpi?.day_income
-                          ? Number(kpi.day_income.toFixed(2)).toLocaleString(
-                              "en-US",
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }
-                            )
+                          ? Number(kpi.day_income.toFixed(2)).toLocaleString("en-US", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })
                           : "-"}{" "}
                         {t.bath}
                       </p>
@@ -426,13 +384,10 @@ export default function Seafdec() {
                       <p className="text-lg text-textc">{t.Total}:</p>
                       <p className="text-lg text-textc mr-8">
                         {kpi?.total_income
-                          ? Number(kpi.total_income.toFixed(2)).toLocaleString(
-                              "en-US",
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }
-                            )
+                          ? Number(kpi.total_income.toFixed(2)).toLocaleString("en-US", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })
                           : "-"}{" "}
                         {t.bath}
                       </p>
@@ -448,18 +403,13 @@ export default function Seafdec() {
                   <div className="flex-auto ml-8 mr-16">
                     <p className="text-xl font-bold text-textc">{t.Yield}</p>
                     <div className="flex justify-between ">
-                      <p className="text-lg text-textc">
-                        {!selectedDate ? t.Today : "วัน"}:
-                      </p>
+                      <p className="text-lg text-textc">{!selectedDate ? t.Today : "วัน"}:</p>
                       <p className="text-lg text-textc">
                         {kpi?.day_power
-                          ? Number(kpi.day_power.toFixed(2)).toLocaleString(
-                              "en-US",
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }
-                            )
+                          ? Number(kpi.day_power.toFixed(2)).toLocaleString("en-US", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })
                           : "-"}{" "}
                         {t.kwh}
                       </p>
@@ -468,13 +418,10 @@ export default function Seafdec() {
                       <p className="text-lg text-textc">{t.Month}:</p>
                       <p className="text-lg text-textc">
                         {kpi?.month_power
-                          ? Number(kpi.month_power.toFixed(2)).toLocaleString(
-                              "en-US",
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }
-                            )
+                          ? Number(kpi.month_power.toFixed(2)).toLocaleString("en-US", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })
                           : "-"}{" "}
                         {t.kwh}
                       </p>
@@ -483,13 +430,10 @@ export default function Seafdec() {
                       <p className="text-lg text-textc">{t.Total}:</p>
                       <p className="text-lg text-textc">
                         {kpi?.total_power
-                          ? Number(kpi.total_power.toFixed(2)).toLocaleString(
-                              "en-US",
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }
-                            )
+                          ? Number(kpi.total_power.toFixed(2)).toLocaleString("en-US", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })
                           : "-"}{" "}
                         {t.kwh}
                       </p>
@@ -498,7 +442,7 @@ export default function Seafdec() {
                 </div>
               </div>
 
-              {/* Tree */}
+              {/* Trees */}
               <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
                 <div className="flex items-center">
                   <img src="/trees.png" alt="logo" className="h-24 pl-2" />
@@ -506,9 +450,7 @@ export default function Seafdec() {
                     <p className="text-xl font-bold text-textc">{t.tree}</p>
                     <p className="text-lg text-textc">
                       {kpi?.equivalent_trees
-                        ? Number(
-                            kpi.equivalent_trees.toFixed(0)
-                          ).toLocaleString()
+                        ? Number(kpi.equivalent_trees.toFixed(0)).toLocaleString()
                         : "-"}{" "}
                       {t.trees}
                     </p>
@@ -516,19 +458,15 @@ export default function Seafdec() {
                 </div>
               </div>
 
-              {/* Co2_avoided */}
+              {/* CO2 avoided */}
               <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
                 <div className="flex items-center">
                   <img src="/co2.png" alt="logo" className="h-24 pl-2" />
                   <div className="flex-auto ml-8">
-                    <p className="text-xl font-bold text-textc">
-                      {t.co2Avoided}
-                    </p>
+                    <p className="text-xl font-bold text-textc">{t.co2Avoided}</p>
                     <p className="text-lg text-textc">
                       {kpi?.co2_avoided
-                        ? Number(
-                            (kpi.co2_avoided / 1000).toFixed(2)
-                          ).toLocaleString("en-US", {
+                        ? Number((kpi.co2_avoided / 1000).toFixed(2)).toLocaleString("en-US", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })
@@ -542,7 +480,6 @@ export default function Seafdec() {
           )}
         </div>
       </div>
-
       {/* iPad Layout */}
       <div className="hidden md:block xl:hidden">
         <div className="flex flex-col h-screen">
