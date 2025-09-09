@@ -10,13 +10,24 @@ export default function Seafdec() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showLanguageOptions, setShowLanguageOptions] = useState(false);
   const [selectedImage, setSelectedImage] = useState("structure");
+// Auto toggle image every 30 minutes between structure and map
+useEffect(() => {
+  const id = setInterval(() => {
+    setSelectedImage((prev) => (prev === "structure" ? "map" : "structure"));
+  }, 30 * 60 * 1000);
+  return () => clearInterval(id);
+}, []);
+
 
   // Data States
   const [kpi, setKpi] = useState(null);
   const [selectedDate, setSelectedDate] = useState(""); 
 
   // Language
-  const [language, setLanguage] = useState("th");
+  const [language, setLanguage] = useState(() => localStorage.getItem("lang") || "en");
+
+  // Persist language choice
+  useEffect(() => { localStorage.setItem("lang", language); }, [language]);
   const t =
     {
       th: {
