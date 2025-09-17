@@ -12,17 +12,17 @@ export default function A1() {
   const [selectedImage, setSelectedImage] = useState("structure");
 
   useEffect(() => {
-  const updateImage = () => {
-    const now = new Date();
-    const minutes = now.getUTCMinutes(); // อิงเวลาโลก (UTC)
-    const halfHour = Math.floor(minutes / 30);
-    setSelectedImage(halfHour % 2 === 0 ? "structure" : "map");
-  };
+    const updateImage = () => {
+      const now = new Date();
+      const minutes = now.getUTCMinutes(); // อิงเวลาโลก (UTC)
+      const halfHour = Math.floor(minutes / 30);
+      setSelectedImage(halfHour % 2 === 0 ? "structure" : "map");
+    };
 
-  updateImage(); // เรียกทันทีตอน mount
-  const id = setInterval(updateImage, 60 * 1000); // เช็คทุก 1 นาที
-  return () => clearInterval(id);
-}, []);
+    updateImage(); // เรียกทันทีตอน mount
+    const id = setInterval(updateImage, 60 * 1000); // เช็คทุก 1 นาที
+    return () => clearInterval(id);
+  }, []);
 
   // Data States
   const [kpi, setKpi] = useState(null);
@@ -83,6 +83,28 @@ export default function A1() {
         cancel: "Cancel",
       },
     }[language];
+
+  //number helpers (show 0 properly) 
+  const isNil = (v) => v === null || v === undefined;
+
+  const fmt = (v, digits = 2) =>
+    isNil(v)
+      ? '-'
+      : Number(v).toLocaleString('en-US', {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
+      });
+
+  const fmtInt = (v) =>
+    isNil(v) ? '-' : Number(v).toLocaleString('en-US');
+
+  const fmtTon = (v) =>
+    isNil(v)
+      ? '-'
+      : (Number(v) / 1000).toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
 
   // Auth guard
   useEffect(() => {
@@ -195,26 +217,24 @@ export default function A1() {
     <div className="absolute top-full right-0 mt-2 bg-white/90 backdrop-blur-lg rounded-xl shadow-xl border border-white/30 overflow-hidden z-40">
       <button
         onClick={() => handleLanguageSelect("th")}
-        className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${
-          language === "th"
-            ? "bg-blue-100 text-blue-700 font-semibold"
-            : "text-gray-700"
-        }`}
+        className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${language === "th"
+          ? "bg-blue-100 text-blue-700 font-semibold"
+          : "text-gray-700"
+          }`}
       >
         ไทย
       </button>
       <button
         onClick={() => handleLanguageSelect("en")}
-        className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${
-          language === "en"
-            ? "bg-blue-100 text-blue-700 font-semibold"
-            : "text-gray-700"
-        }`}
+        className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${language === "en"
+          ? "bg-blue-100 text-blue-700 font-semibold"
+          : "text-gray-700"
+          }`}
       >
         ENG
       </button>
     </div>
-  ); 
+  );
 
   // Render 
   return (
@@ -270,17 +290,15 @@ export default function A1() {
               <div className="flex gap-2 bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/20">
                 <button
                   onClick={() => setSelectedImage("structure")}
-                  className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${
-                    selectedImage === "structure" ? "border-blue-500 bg-blue-100" : "border-transparent"
-                  }`}
+                  className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "structure" ? "border-blue-500 bg-blue-100" : "border-transparent"
+                    }`}
                 >
                   <img src="/structure.png" alt="structure" className="h-8 w-8 object-contain" />
                 </button>
                 <button
                   onClick={() => setSelectedImage("map")}
-                  className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${
-                    selectedImage === "map" ? "border-blue-500 bg-blue-100" : "border-transparent"
-                  }`}
+                  className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "map" ? "border-blue-500 bg-blue-100" : "border-transparent"
+                    }`}
                 >
                   <img src="/map.png" alt="map" className="h-8 w-8 object-contain" />
                 </button>
@@ -306,7 +324,7 @@ export default function A1() {
         </div>
 
         {/* Right: KPI Panel (Desktop) */}
-        <div className="w-[500px] p-6 flex flex-col gap-4 bg-white/20 backdrop-blur-xl shadow-2xl border-l border-white/30 h-screen">
+        <div className="w-[600px] p-6 flex flex-col gap-4 bg-white/20 backdrop-blur-xl shadow-2xl border-l border-white/30 h-screen">
           {/* Header */}
           <div className="flex justify-end items-center gap-3 h-auto">
             {/* Calendar */}
@@ -367,33 +385,21 @@ export default function A1() {
               <p className="text-sm text-right text-gray-600 italic">{getDateDisplayText()}</p>
 
               {/* Revenue */}
-              <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
+              <div className="bg-gradient-to-br from-lightblue rounded-2xl p-8 shadow">
                 <div className="flex items-center">
-                  <img src="/income.png" alt="logo" className="h-24 ml-6" />
+                  <img src="/income.png" alt="logo" className="h-24 ml-8" />
                   <div className="flex-auto ml-8 mr-16">
-                    <p className="text-xl font-bold text-textc">{t.Revenue}</p>
+                    <p className="text-2xl font-bold text-textc">{t.Revenue}</p>
                     <div className="flex justify-between">
-                      <p className="text-lg text-textc">{!selectedDate ? t.Today : "วัน"}:</p>
-                      <p className="text-lg text-textc mr-8">
-                        {kpi?.day_income
-                          ? Number(kpi.day_income.toFixed(2)).toLocaleString("en-US", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })
-                          : "-"}{" "}
-                        {t.bath}
+                      <p className="text-2xl text-textc">{!selectedDate ? t.Today : "วัน"}:</p>
+                      <p className="text-2xl text-textc mr-8">
+                        {fmt(kpi?.day_income, 2)} {t.bath}
                       </p>
                     </div>
                     <div className="flex justify-between">
-                      <p className="text-lg text-textc">{t.Total}:</p>
-                      <p className="text-lg text-textc mr-8">
-                        {kpi?.total_income
-                          ? Number(kpi.total_income.toFixed(2)).toLocaleString("en-US", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })
-                          : "-"}{" "}
-                        {t.bath}
+                      <p className="text-2xl text-textc">{t.Total}:</p>
+                      <p className="text-2xl text-textc mr-8">
+                        {fmt(kpi?.total_income, 2)} {t.bath}
                       </p>
                     </div>
                   </div>
@@ -401,45 +407,27 @@ export default function A1() {
               </div>
 
               {/* Yield */}
-              <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
+              <div className="bg-gradient-to-br from-lightblue rounded-xl p-8 shadow">
                 <div className="flex items-center ">
                   <img src="/power.png" alt="logo" className="h-24 ml-4" />
                   <div className="flex-auto ml-8 mr-16">
-                    <p className="text-xl font-bold text-textc">{t.Yield}</p>
+                    <p className="text-2xl font-bold text-textc">{t.Yield}</p>
                     <div className="flex justify-between ">
-                      <p className="text-lg text-textc">{!selectedDate ? t.Today : "วัน"}:</p>
-                      <p className="text-lg text-textc">
-                        {kpi?.day_power
-                          ? Number(kpi.day_power.toFixed(2)).toLocaleString("en-US", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })
-                          : "-"}{" "}
-                        {t.kwh}
+                      <p className="text-2xl text-textc">{!selectedDate ? t.Today : "วัน"}:</p>
+                      <p className="text-2xl text-textc">
+                        {fmt(kpi?.day_power, 2)} {t.kwh}
                       </p>
                     </div>
                     <div className="flex justify-between">
-                      <p className="text-lg text-textc">{t.Month}:</p>
-                      <p className="text-lg text-textc">
-                        {kpi?.month_power
-                          ? Number(kpi.month_power.toFixed(2)).toLocaleString("en-US", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })
-                          : "-"}{" "}
-                        {t.kwh}
+                      <p className="text-2xl text-textc">{t.Month}:</p>
+                      <p className="text-2xl text-textc">
+                        {fmt(kpi?.month_power, 2)} {t.kwh}
                       </p>
                     </div>
                     <div className="flex justify-between">
-                      <p className="text-lg text-textc">{t.Total}:</p>
-                      <p className="text-lg text-textc">
-                        {kpi?.total_power
-                          ? Number(kpi.total_power.toFixed(2)).toLocaleString("en-US", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })
-                          : "-"}{" "}
-                        {t.kwh}
+                      <p className="text-2xl text-textc">{t.Total}:</p>
+                      <p className="text-2xl text-textc">
+                        {fmt(kpi?.total_power, 2)} {t.kwh}
                       </p>
                     </div>
                   </div>
@@ -447,35 +435,26 @@ export default function A1() {
               </div>
 
               {/* Trees */}
-              <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
+              <div className="bg-gradient-to-br from-lightblue rounded-xl p-8 shadow">
                 <div className="flex items-center">
                   <img src="/trees.png" alt="logo" className="h-24 pl-2" />
                   <div className="flex-1 ml-8">
-                    <p className="text-xl font-bold text-textc">{t.tree}</p>
-                    <p className="text-lg text-textc">
-                      {kpi?.equivalent_trees
-                        ? Number(kpi.equivalent_trees.toFixed(0)).toLocaleString()
-                        : "-"}{" "}
-                      {t.trees}
+                    <p className="text-2xl font-bold text-textc">{t.tree}</p>
+                    <p className="text-2xl text-textc">
+                      {fmtInt(kpi?.equivalent_trees)} {t.trees}
                     </p>
                   </div>
                 </div>
               </div>
 
               {/* CO2 avoided */}
-              <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
+              <div className="bg-gradient-to-br from-lightblue rounded-xl p-8 shadow">
                 <div className="flex items-center">
                   <img src="/co2.png" alt="logo" className="h-24 pl-2" />
                   <div className="flex-auto ml-8">
-                    <p className="text-xl font-bold text-textc">{t.co2Avoided}</p>
-                    <p className="text-lg text-textc">
-                      {kpi?.co2_avoided
-                        ? Number((kpi.co2_avoided / 1000).toFixed(2)).toLocaleString("en-US", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })
-                        : "-"}{" "}
-                      {t.ton}
+                    <p className="text-2xl font-bold text-textc">{t.co2Avoided}</p>
+                    <p className="text-2xl text-textc">
+                      {fmtTon(kpi?.co2_avoided)} {t.ton}
                     </p>
                   </div>
                 </div>
@@ -546,11 +525,10 @@ export default function A1() {
                   <div className="flex gap-2 bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/20">
                     <button
                       onClick={() => setSelectedImage("structure")}
-                      className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${
-                        selectedImage === "structure"
-                          ? "border-blue-500 bg-blue-100"
-                          : "border-transparent"
-                      }`}
+                      className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "structure"
+                        ? "border-blue-500 bg-blue-100"
+                        : "border-transparent"
+                        }`}
                     >
                       <img
                         src="/structure.png"
@@ -560,11 +538,10 @@ export default function A1() {
                     </button>
                     <button
                       onClick={() => setSelectedImage("map")}
-                      className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${
-                        selectedImage === "map"
-                          ? "border-blue-500 bg-blue-100"
-                          : "border-transparent"
-                      }`}
+                      className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "map"
+                        ? "border-blue-500 bg-blue-100"
+                        : "border-transparent"
+                        }`}
                     >
                       <img
                         src="/map.png"
@@ -688,29 +665,13 @@ export default function A1() {
                             {!selectedDate ? t.Today : "วัน"}:
                           </p>
                           <p className="text-sm text-textc">
-                            {kpi?.day_income
-                              ? Number(
-                                  kpi.day_income.toFixed(2)
-                                ).toLocaleString("en-US", {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })
-                              : "-"}{" "}
-                            {t.bath}
+                            {fmt(kpi?.day_income, 2)} {t.bath}
                           </p>
                         </div>
                         <div className="flex justify-between">
                           <p className="text-sm text-textc">{t.Total}:</p>
                           <p className="text-sm text-textc">
-                            {kpi?.total_income
-                              ? Number(
-                                  kpi.total_income.toFixed(2)
-                                ).toLocaleString("en-US", {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })
-                              : "-"}{" "}
-                            {t.bath}
+                            {fmt(kpi?.total_income, 2)} {t.bath}
                           </p>
                         </div>
                       </div>
@@ -730,44 +691,19 @@ export default function A1() {
                             {!selectedDate ? t.Today : "วัน"}:
                           </p>
                           <p className="text-sm text-textc">
-                            {kpi?.day_power
-                              ? Number(kpi.day_power.toFixed(2)).toLocaleString(
-                                  "en-US",
-                                  {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2,
-                                  }
-                                )
-                              : "-"}{" "}
-                            {t.kwh}
+                            {fmt(kpi?.day_power, 2)} {t.kwh}
                           </p>
                         </div>
                         <div className="flex justify-between">
                           <p className="text-sm text-textc">{t.Month}:</p>
                           <p className="text-sm text-textc">
-                            {kpi?.month_power
-                              ? Number(
-                                  kpi.month_power.toFixed(2)
-                                ).toLocaleString("en-US", {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })
-                              : "-"}{" "}
-                            {t.kwh}
+                            {fmt(kpi?.month_power, 2)} {t.kwh}
                           </p>
                         </div>
                         <div className="flex justify-between">
                           <p className="text-sm text-textc">{t.Total}:</p>
                           <p className="text-sm text-textc">
-                            {kpi?.total_power
-                              ? Number(
-                                  kpi.total_power.toFixed(2)
-                                ).toLocaleString("en-US", {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })
-                              : "-"}{" "}
-                            {t.kwh}
+                            {fmt(kpi?.total_power, 2)} {t.kwh}
                           </p>
                         </div>
                       </div>
@@ -781,12 +717,7 @@ export default function A1() {
                       <div className="flex-auto ml-4">
                         <p className="text-lg font-bold text-textc">{t.tree}</p>
                         <p className="text-sm text-textc">
-                          {kpi?.equivalent_trees
-                            ? Number(
-                                kpi.equivalent_trees.toFixed(0)
-                              ).toLocaleString()
-                            : "-"}{" "}
-                          {t.trees}
+                          {fmtInt(kpi?.equivalent_trees)} {t.trees}
                         </p>
                       </div>
                     </div>
@@ -801,15 +732,7 @@ export default function A1() {
                           {t.co2Avoided}
                         </p>
                         <p className="text-sm text-textc">
-                          {kpi?.co2_avoided
-                            ? Number(
-                                (kpi.co2_avoided / 1000).toFixed(2)
-                              ).toLocaleString("en-US", {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              })
-                            : "-"}{" "}
-                          {t.ton}
+                          {fmtTon(kpi?.co2_avoided)} {t.ton}
                         </p>
                       </div>
                     </div>
@@ -879,11 +802,10 @@ export default function A1() {
           <div className="flex gap-2 bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/20">
             <button
               onClick={() => setSelectedImage("structure")}
-              className={`p-1.5 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${
-                selectedImage === "structure"
-                  ? "border-blue-500 bg-blue-100"
-                  : "border-transparent"
-              }`}
+              className={`p-1.5 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "structure"
+                ? "border-blue-500 bg-blue-100"
+                : "border-transparent"
+                }`}
             >
               <img
                 src="/structure.png"
@@ -893,11 +815,10 @@ export default function A1() {
             </button>
             <button
               onClick={() => setSelectedImage("map")}
-              className={`p-1.5 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${
-                selectedImage === "map"
-                  ? "border-blue-500 bg-blue-100"
-                  : "border-transparent"
-              }`}
+              className={`p-1.5 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "map"
+                ? "border-blue-500 bg-blue-100"
+                : "border-transparent"
+                }`}
             >
               <img
                 src="/map.png"
@@ -996,31 +917,13 @@ export default function A1() {
                         {!selectedDate ? t.Today : "วัน"}:
                       </p>
                       <p className="text-lg text-textc mr-8">
-                        {kpi?.day_income
-                          ? Number(kpi.day_income.toFixed(2)).toLocaleString(
-                              "en-US",
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }
-                            )
-                          : "-"}{" "}
-                        {t.bath}
+                        {fmt(kpi?.day_income, 2)} {t.bath}
                       </p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-lg text-textc">{t.Total}:</p>
                       <p className="text-lg text-textc mr-8">
-                        {kpi?.total_income
-                          ? Number(kpi.total_income.toFixed(2)).toLocaleString(
-                              "en-US",
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }
-                            )
-                          : "-"}{" "}
-                        {t.bath}
+                        {fmt(kpi?.total_income, 2)} {t.bath}
                       </p>
                     </div>
                   </div>
@@ -1038,46 +941,19 @@ export default function A1() {
                         {!selectedDate ? t.Today : "วัน"}:
                       </p>
                       <p className="text-lg text-textc">
-                        {kpi?.day_power
-                          ? Number(kpi.day_power.toFixed(2)).toLocaleString(
-                              "en-US",
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }
-                            )
-                          : "-"}{" "}
-                        {t.kwh}
+                        {fmt(kpi?.day_power, 2)} {t.kwh}
                       </p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-lg text-textc">{t.Month}:</p>
                       <p className="text-lg text-textc">
-                        {kpi?.month_power
-                          ? Number(kpi.month_power.toFixed(2)).toLocaleString(
-                              "en-US",
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }
-                            )
-                          : "-"}{" "}
-                        {t.kwh}
+                        {fmt(kpi?.month_power, 2)} {t.kwh}
                       </p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-lg text-textc">{t.Total}:</p>
                       <p className="text-lg text-textc">
-                        {kpi?.total_power
-                          ? Number(kpi.total_power.toFixed(2)).toLocaleString(
-                              "en-US",
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }
-                            )
-                          : "-"}{" "}
-                        {t.kwh}
+                        {fmt(kpi?.total_power, 2)} {t.kwh}
                       </p>
                     </div>
                   </div>
@@ -1091,12 +967,7 @@ export default function A1() {
                   <div className="flex-auto ml-4">
                     <p className="text-xl font-bold text-textc">{t.tree}</p>
                     <p className="text-lg text-textc">
-                      {kpi?.equivalent_trees
-                        ? Number(
-                            kpi.equivalent_trees.toFixed(0)
-                          ).toLocaleString()
-                        : "-"}{" "}
-                      {t.trees}
+                      {fmtInt(kpi?.equivalent_trees)} {t.trees}
                     </p>
                   </div>
                 </div>
@@ -1111,15 +982,7 @@ export default function A1() {
                       {t.co2Avoided}
                     </p>
                     <p className="text-lg text-textc">
-                      {kpi?.co2_avoided
-                        ? Number(
-                            (kpi.co2_avoided / 1000).toFixed(2)
-                          ).toLocaleString("en-US", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })
-                        : "-"}{" "}
-                      {t.ton}
+                      {fmtTon(kpi?.co2_avoided)} {t.ton}
                     </p>
                   </div>
                 </div>

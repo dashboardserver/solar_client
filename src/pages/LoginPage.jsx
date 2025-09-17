@@ -10,7 +10,7 @@ export default function LoginPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setErrorMessage(''); // Clear error message ก่อน submit
+    setErrorMessage('');
     
     try {
       const res = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/auth/login`, {
@@ -36,7 +36,6 @@ export default function LoginPage() {
       }
 
     } catch (err) {
-      // แสดง error message ใต้ปุ่ม login
       if (err.response?.status === 401 || err.response?.status === 400) {
         setErrorMessage('The Username or Password is Incorrect.\nPlease try again.');
       } else {

@@ -63,10 +63,9 @@ export default function AdminPage() {
           return;
         }
 
-        // ตรวจสอบเพิ่มเติม: admin ควรมี dashboard เป็น null หรือ 'admin'
+        // ตรวจสอบเพิ่มเติม admin ควรมี dashboard เป็น null หรือ 'admin'
         if (storedDashboard && storedDashboard !== 'admin' && storedDashboard !== null) {
           console.warn('[ADMIN] Admin should not have specific dashboard assigned. Dashboard:', storedDashboard);
-          // ไม่ redirect ในกรณีนี้ เพราะอาจเป็น admin ที่มี dashboard assigned
         }
 
         // ตรวจสอบกับ backend เพื่อยืนยันสิทธิ์
@@ -84,7 +83,6 @@ export default function AdminPage() {
       } catch (err) {
         console.error('[ADMIN] Authorization failed:', err);
         
-        // จัดการ error แบบเข้มงวด
         let errorMessage = 'Access denied. Please login again.';
         
         if (err.response?.status === 401) {
@@ -97,7 +95,6 @@ export default function AdminPage() {
         
         alert(errorMessage);
         
-        // เคลียร์ข้อมูลทั้งหมดและ redirect
         localStorage.clear();
         navigate('/');
         return;
@@ -164,7 +161,6 @@ export default function AdminPage() {
     navigate(`/dashboard/${target}`);
   };
 
-  // ยังไม่ตรวจเสร็จก็ไม่ render - ป้องกันไม่ให้เห็นเนื้อหา
   if (!isAuthChecked) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
