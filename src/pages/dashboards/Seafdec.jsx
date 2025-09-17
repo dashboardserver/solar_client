@@ -1,33 +1,39 @@
-// src/pages/Seafdec.jsx
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+
 export default function Seafdec() {
   const navigate = useNavigate();
+  const SOURCE_KEY = "SEAFDEC"; // << ใช้ endpoint กลางตาม sourceKey นี้
 
-  // UI States
   const [showSettings, setShowSettings] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showLanguageOptions, setShowLanguageOptions] = useState(false);
   const [selectedImage, setSelectedImage] = useState("structure");
-// Auto toggle image every 30 minutes between structure and map
-useEffect(() => {
-  const id = setInterval(() => {
-    setSelectedImage((prev) => (prev === "structure" ? "map" : "structure"));
-  }, 30 * 60 * 1000);
-  return () => clearInterval(id);
-}, []);
 
+  useEffect(() => {
+    const updateImage = () => {
+      const now = new Date();
+      const minutes = now.getUTCMinutes(); // อิงเวลาโลก (UTC)
+      const halfHour = Math.floor(minutes / 30);
+      setSelectedImage(halfHour % 2 === 0 ? "structure" : "map");
+    };
+
+    updateImage(); // เรียกทันทีตอน mount
+    const id = setInterval(updateImage, 60 * 1000); // เช็คทุก 1 นาที
+    return () => clearInterval(id);
+  }, []);
 
   // Data States
   const [kpi, setKpi] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(""); 
+  const [selectedDate, setSelectedDate] = useState("");
 
   // Language
   const [language, setLanguage] = useState(() => localStorage.getItem("lang") || "en");
 
   // Persist language choice
   useEffect(() => { localStorage.setItem("lang", language); }, [language]);
+
   const t =
     {
       th: {
@@ -78,7 +84,7 @@ useEffect(() => {
         confirm: "Confirm",
         cancel: "Cancel",
       },
-    }[language]; 
+    }[language];
 
   // Auth guard
   useEffect(() => {
@@ -96,8 +102,8 @@ useEffect(() => {
     try {
       const base = process.env.REACT_APP_API_BASE_URL;
       const url = selectedDate
-        ? `${base}/api/seafdec/by-date?date=${selectedDate}`
-        : `${base}/api/seafdec/today`;
+        ? `${base}/api/kpi/${SOURCE_KEY}/by-date?date=${selectedDate}`
+        : `${base}/api/kpi/${SOURCE_KEY}/today`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
@@ -143,7 +149,7 @@ useEffect(() => {
     }
   };
 
-  // Components 
+  // Components
   const DatePickerModal = () => {
     const [tempDate, setTempDate] = useState(
       selectedDate || new Date().toISOString().split("T")[0]
@@ -191,28 +197,26 @@ useEffect(() => {
     <div className="absolute top-full right-0 mt-2 bg-white/90 backdrop-blur-lg rounded-xl shadow-xl border border-white/30 overflow-hidden z-40">
       <button
         onClick={() => handleLanguageSelect("th")}
-        className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${
-          language === "th"
-            ? "bg-blue-100 text-blue-700 font-semibold"
-            : "text-gray-700"
-        }`}
+        className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${language === "th"
+          ? "bg-blue-100 text-blue-700 font-semibold"
+          : "text-gray-700"
+          }`}
       >
         ไทย
       </button>
       <button
         onClick={() => handleLanguageSelect("en")}
-        className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${
-          language === "en"
-            ? "bg-blue-100 text-blue-700 font-semibold"
-            : "text-gray-700"
-        }`}
+        className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${language === "en"
+          ? "bg-blue-100 text-blue-700 font-semibold"
+          : "text-gray-700"
+          }`}
       >
         ENG
       </button>
     </div>
-  ); 
+  );
 
-  // Render 
+  // Render
   return (
     <div className="relative w-full h-full">
       <div className="absolute inset-0 bg-gradient-to-b from-sky-300 to-bgblue -z-10" />
@@ -266,17 +270,15 @@ useEffect(() => {
               <div className="flex gap-2 bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/20">
                 <button
                   onClick={() => setSelectedImage("structure")}
-                  className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${
-                    selectedImage === "structure" ? "border-blue-500 bg-blue-100" : "border-transparent"
-                  }`}
+                  className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "structure" ? "border-blue-500 bg-blue-100" : "border-transparent"
+                    }`}
                 >
                   <img src="/structure.png" alt="structure" className="h-8 w-8 object-contain" />
                 </button>
                 <button
                   onClick={() => setSelectedImage("map")}
-                  className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${
-                    selectedImage === "map" ? "border-blue-500 bg-blue-100" : "border-transparent"
-                  }`}
+                  className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "map" ? "border-blue-500 bg-blue-100" : "border-transparent"
+                    }`}
                 >
                   <img src="/map.png" alt="map" className="h-8 w-8 object-contain" />
                 </button>
@@ -302,13 +304,13 @@ useEffect(() => {
         </div>
 
         {/* Right: KPI Panel (Desktop) */}
-        <div className="w-[500px] p-6 flex flex-col gap-4 bg-white/20 backdrop-blur-xl shadow-2xl border-l border-white/30 h-screen">
+        <div className="w-[600px] p-6 flex flex-col gap-4 bg-white/20 backdrop-blur-xl shadow-2xl border-l border-white/30 h-screen">
           {/* Header */}
           <div className="flex justify-end items-center gap-3 h-auto">
             {/* Calendar */}
             <button
               onClick={handleDateModeChange}
-              className="group bg-white/80 backdrop-blur-sm text-blue-700 p-2.5 rounded-xl shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300 border border-white/20"
+              className="group bg-white/80 backdrop-blur-sm text-blue-700 p-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300 border border-white/20"
             >
               <img src="/calendar.png" alt="calendar" className="h-5 w-5 group-hover:scale-110 transition-transform" />
             </button>
@@ -317,7 +319,7 @@ useEffect(() => {
             <div className="relative">
               <button
                 onClick={() => setShowLanguageOptions(!showLanguageOptions)}
-                className="group bg-white/80 backdrop-blur-sm text-blue-700 p-2.5 rounded-xl shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300 border border-white/20"
+                className="group bg-white/80 backdrop-blur-sm text-blue-700 p-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300 border border-white/20"
               >
                 <img src="/language.png" alt="lang" className="h-5 w-5 group-hover:scale-110 transition-transform" />
               </button>
@@ -326,7 +328,7 @@ useEffect(() => {
 
             {/* Settings */}
             <button
-              className="group bg-white/80 backdrop-blur-sm text-blue-700 p-2.5 rounded-xl shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300 text-xl font-bold border border-white/20"
+              className="group bg-white/80 backdrop-blur-sm text-blue-700 p-3.5 rounded-xl shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300 border border-white/20"
               onClick={() => setShowSettings(!showSettings)}
             >
               {showSettings ? (
@@ -342,17 +344,17 @@ useEffect(() => {
             <div className="animate-fadeIn">
               <div className="bg-white/50 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/30">
                 <div className="text-center mb-6">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg">
-                    <span className="text-2xl text-white">👤</span>
+                  <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg">
+                    <span className="text-3xl text-white">👤</span>
                   </div>
-                  <p className="text-lg font-semibold text-blue-900 mb-1">
+                  <p className="text-2xl font-semibold text-blue-900 mb-1">
                     {t.name} : {localStorage.getItem("username")}
                   </p>
-                  <p className="text-sm text-blue-600">{t.status} : {localStorage.getItem("role")}</p>
+                  <p className="text-2lx text-blue-600">{t.status} : {localStorage.getItem("role")}</p>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-4 rounded-xl font-medium hover:from-red-600 hover:to-red-700 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                  className="w-full bg-gradient-to-r from-red-500 to-red-600 text-xl text-white px-6 py-4 rounded-xl font-medium hover:from-red-600 hover:to-red-700 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                 >
                   {t.logout}
                 </button>
@@ -363,31 +365,31 @@ useEffect(() => {
               <p className="text-sm text-right text-gray-600 italic">{getDateDisplayText()}</p>
 
               {/* Revenue */}
-              <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
+              <div className="bg-gradient-to-br from-lightblue rounded-2xl p-8 shadow">
                 <div className="flex items-center">
-                  <img src="/income.png" alt="logo" className="h-24 ml-6" />
+                  <img src="/income.png" alt="logo" className="h-24 ml-8" />
                   <div className="flex-auto ml-8 mr-16">
-                    <p className="text-xl font-bold text-textc">{t.Revenue}</p>
+                    <p className="text-2xl font-bold text-textc">{t.Revenue}</p>
                     <div className="flex justify-between">
-                      <p className="text-lg text-textc">{!selectedDate ? t.Today : "วัน"}:</p>
-                      <p className="text-lg text-textc mr-8">
+                      <p className="text-2xl text-textc">{!selectedDate ? t.Today : "วัน"}:</p>
+                      <p className="text-2xl text-textc mr-8">
                         {kpi?.day_income
                           ? Number(kpi.day_income.toFixed(2)).toLocaleString("en-US", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
                           : "-"}{" "}
                         {t.bath}
                       </p>
                     </div>
                     <div className="flex justify-between">
-                      <p className="text-lg text-textc">{t.Total}:</p>
-                      <p className="text-lg text-textc mr-8">
+                      <p className="text-2xl text-textc">{t.Total}:</p>
+                      <p className="text-2xl text-textc mr-8">
                         {kpi?.total_income
                           ? Number(kpi.total_income.toFixed(2)).toLocaleString("en-US", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
                           : "-"}{" "}
                         {t.bath}
                       </p>
@@ -397,43 +399,43 @@ useEffect(() => {
               </div>
 
               {/* Yield */}
-              <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
+              <div className="bg-gradient-to-br from-lightblue rounded-xl p-8 shadow">
                 <div className="flex items-center ">
                   <img src="/power.png" alt="logo" className="h-24 ml-4" />
                   <div className="flex-auto ml-8 mr-16">
-                    <p className="text-xl font-bold text-textc">{t.Yield}</p>
+                    <p className="text-2xl font-bold text-textc">{t.Yield}</p>
                     <div className="flex justify-between ">
-                      <p className="text-lg text-textc">{!selectedDate ? t.Today : "วัน"}:</p>
-                      <p className="text-lg text-textc">
+                      <p className="text-2xl text-textc">{!selectedDate ? t.Today : "วัน"}:</p>
+                      <p className="text-2xl text-textc">
                         {kpi?.day_power
                           ? Number(kpi.day_power.toFixed(2)).toLocaleString("en-US", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
                           : "-"}{" "}
                         {t.kwh}
                       </p>
                     </div>
                     <div className="flex justify-between">
-                      <p className="text-lg text-textc">{t.Month}:</p>
-                      <p className="text-lg text-textc">
+                      <p className="text-2xl text-textc">{t.Month}:</p>
+                      <p className="text-2xl text-textc">
                         {kpi?.month_power
                           ? Number(kpi.month_power.toFixed(2)).toLocaleString("en-US", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
                           : "-"}{" "}
                         {t.kwh}
                       </p>
                     </div>
                     <div className="flex justify-between">
-                      <p className="text-lg text-textc">{t.Total}:</p>
-                      <p className="text-lg text-textc">
+                      <p className="text-2xl text-textc">{t.Total}:</p>
+                      <p className="text-2xl text-textc">
                         {kpi?.total_power
                           ? Number(kpi.total_power.toFixed(2)).toLocaleString("en-US", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
                           : "-"}{" "}
                         {t.kwh}
                       </p>
@@ -443,12 +445,12 @@ useEffect(() => {
               </div>
 
               {/* Trees */}
-              <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
+              <div className="bg-gradient-to-br from-lightblue rounded-xl p-8 shadow">
                 <div className="flex items-center">
                   <img src="/trees.png" alt="logo" className="h-24 pl-2" />
                   <div className="flex-1 ml-8">
-                    <p className="text-xl font-bold text-textc">{t.tree}</p>
-                    <p className="text-lg text-textc">
+                    <p className="text-2xl font-bold text-textc">{t.tree}</p>
+                    <p className="text-xl text-textc">
                       {kpi?.equivalent_trees
                         ? Number(kpi.equivalent_trees.toFixed(0)).toLocaleString()
                         : "-"}{" "}
@@ -459,17 +461,17 @@ useEffect(() => {
               </div>
 
               {/* CO2 avoided */}
-              <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
+              <div className="bg-gradient-to-br from-lightblue rounded-xl p-8 shadow">
                 <div className="flex items-center">
                   <img src="/co2.png" alt="logo" className="h-24 pl-2" />
                   <div className="flex-auto ml-8">
-                    <p className="text-xl font-bold text-textc">{t.co2Avoided}</p>
-                    <p className="text-lg text-textc">
+                    <p className="text-2xl font-bold text-textc">{t.co2Avoided}</p>
+                    <p className="text-xl text-textc">
                       {kpi?.co2_avoided
                         ? Number((kpi.co2_avoided / 1000).toFixed(2)).toLocaleString("en-US", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })
                         : "-"}{" "}
                       {t.ton}
                     </p>
@@ -542,11 +544,10 @@ useEffect(() => {
                   <div className="flex gap-2 bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/20">
                     <button
                       onClick={() => setSelectedImage("structure")}
-                      className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${
-                        selectedImage === "structure"
-                          ? "border-blue-500 bg-blue-100"
-                          : "border-transparent"
-                      }`}
+                      className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "structure"
+                        ? "border-blue-500 bg-blue-100"
+                        : "border-transparent"
+                        }`}
                     >
                       <img
                         src="/structure.png"
@@ -556,11 +557,10 @@ useEffect(() => {
                     </button>
                     <button
                       onClick={() => setSelectedImage("map")}
-                      className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${
-                        selectedImage === "map"
-                          ? "border-blue-500 bg-blue-100"
-                          : "border-transparent"
-                      }`}
+                      className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "map"
+                        ? "border-blue-500 bg-blue-100"
+                        : "border-transparent"
+                        }`}
                     >
                       <img
                         src="/map.png"
@@ -686,11 +686,11 @@ useEffect(() => {
                           <p className="text-sm text-textc">
                             {kpi?.day_income
                               ? Number(
-                                  kpi.day_income.toFixed(2)
-                                ).toLocaleString("en-US", {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })
+                                kpi.day_income.toFixed(2)
+                              ).toLocaleString("en-US", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })
                               : "-"}{" "}
                             {t.bath}
                           </p>
@@ -700,11 +700,11 @@ useEffect(() => {
                           <p className="text-sm text-textc">
                             {kpi?.total_income
                               ? Number(
-                                  kpi.total_income.toFixed(2)
-                                ).toLocaleString("en-US", {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })
+                                kpi.total_income.toFixed(2)
+                              ).toLocaleString("en-US", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })
                               : "-"}{" "}
                             {t.bath}
                           </p>
@@ -728,12 +728,12 @@ useEffect(() => {
                           <p className="text-sm text-textc">
                             {kpi?.day_power
                               ? Number(kpi.day_power.toFixed(2)).toLocaleString(
-                                  "en-US",
-                                  {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2,
-                                  }
-                                )
+                                "en-US",
+                                {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }
+                              )
                               : "-"}{" "}
                             {t.kwh}
                           </p>
@@ -743,11 +743,11 @@ useEffect(() => {
                           <p className="text-sm text-textc">
                             {kpi?.month_power
                               ? Number(
-                                  kpi.month_power.toFixed(2)
-                                ).toLocaleString("en-US", {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })
+                                kpi.month_power.toFixed(2)
+                              ).toLocaleString("en-US", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })
                               : "-"}{" "}
                             {t.kwh}
                           </p>
@@ -757,11 +757,11 @@ useEffect(() => {
                           <p className="text-sm text-textc">
                             {kpi?.total_power
                               ? Number(
-                                  kpi.total_power.toFixed(2)
-                                ).toLocaleString("en-US", {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })
+                                kpi.total_power.toFixed(2)
+                              ).toLocaleString("en-US", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })
                               : "-"}{" "}
                             {t.kwh}
                           </p>
@@ -779,8 +779,8 @@ useEffect(() => {
                         <p className="text-sm text-textc">
                           {kpi?.equivalent_trees
                             ? Number(
-                                kpi.equivalent_trees.toFixed(0)
-                              ).toLocaleString()
+                              kpi.equivalent_trees.toFixed(0)
+                            ).toLocaleString()
                             : "-"}{" "}
                           {t.trees}
                         </p>
@@ -799,11 +799,11 @@ useEffect(() => {
                         <p className="text-sm text-textc">
                           {kpi?.co2_avoided
                             ? Number(
-                                (kpi.co2_avoided / 1000).toFixed(2)
-                              ).toLocaleString("en-US", {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              })
+                              (kpi.co2_avoided / 1000).toFixed(2)
+                            ).toLocaleString("en-US", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })
                             : "-"}{" "}
                           {t.ton}
                         </p>
@@ -875,11 +875,10 @@ useEffect(() => {
           <div className="flex gap-2 bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/20">
             <button
               onClick={() => setSelectedImage("structure")}
-              className={`p-1.5 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${
-                selectedImage === "structure"
-                  ? "border-blue-500 bg-blue-100"
-                  : "border-transparent"
-              }`}
+              className={`p-1.5 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "structure"
+                ? "border-blue-500 bg-blue-100"
+                : "border-transparent"
+                }`}
             >
               <img
                 src="/structure.png"
@@ -889,11 +888,10 @@ useEffect(() => {
             </button>
             <button
               onClick={() => setSelectedImage("map")}
-              className={`p-1.5 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${
-                selectedImage === "map"
-                  ? "border-blue-500 bg-blue-100"
-                  : "border-transparent"
-              }`}
+              className={`p-1.5 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "map"
+                ? "border-blue-500 bg-blue-100"
+                : "border-transparent"
+                }`}
             >
               <img
                 src="/map.png"
@@ -994,12 +992,12 @@ useEffect(() => {
                       <p className="text-lg text-textc mr-8">
                         {kpi?.day_income
                           ? Number(kpi.day_income.toFixed(2)).toLocaleString(
-                              "en-US",
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }
-                            )
+                            "en-US",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }
+                          )
                           : "-"}{" "}
                         {t.bath}
                       </p>
@@ -1009,12 +1007,12 @@ useEffect(() => {
                       <p className="text-lg text-textc mr-8">
                         {kpi?.total_income
                           ? Number(kpi.total_income.toFixed(2)).toLocaleString(
-                              "en-US",
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }
-                            )
+                            "en-US",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }
+                          )
                           : "-"}{" "}
                         {t.bath}
                       </p>
@@ -1036,12 +1034,12 @@ useEffect(() => {
                       <p className="text-lg text-textc">
                         {kpi?.day_power
                           ? Number(kpi.day_power.toFixed(2)).toLocaleString(
-                              "en-US",
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }
-                            )
+                            "en-US",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }
+                          )
                           : "-"}{" "}
                         {t.kwh}
                       </p>
@@ -1051,12 +1049,12 @@ useEffect(() => {
                       <p className="text-lg text-textc">
                         {kpi?.month_power
                           ? Number(kpi.month_power.toFixed(2)).toLocaleString(
-                              "en-US",
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }
-                            )
+                            "en-US",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }
+                          )
                           : "-"}{" "}
                         {t.kwh}
                       </p>
@@ -1066,12 +1064,12 @@ useEffect(() => {
                       <p className="text-lg text-textc">
                         {kpi?.total_power
                           ? Number(kpi.total_power.toFixed(2)).toLocaleString(
-                              "en-US",
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }
-                            )
+                            "en-US",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }
+                          )
                           : "-"}{" "}
                         {t.kwh}
                       </p>
@@ -1089,8 +1087,8 @@ useEffect(() => {
                     <p className="text-lg text-textc">
                       {kpi?.equivalent_trees
                         ? Number(
-                            kpi.equivalent_trees.toFixed(0)
-                          ).toLocaleString()
+                          kpi.equivalent_trees.toFixed(0)
+                        ).toLocaleString()
                         : "-"}{" "}
                       {t.trees}
                     </p>
@@ -1109,11 +1107,11 @@ useEffect(() => {
                     <p className="text-lg text-textc">
                       {kpi?.co2_avoided
                         ? Number(
-                            (kpi.co2_avoided / 1000).toFixed(2)
-                          ).toLocaleString("en-US", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })
+                          (kpi.co2_avoided / 1000).toFixed(2)
+                        ).toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })
                         : "-"}{" "}
                       {t.ton}
                     </p>
