@@ -106,6 +106,11 @@ export default function A1() {
         maximumFractionDigits: 2,
       });
 
+  //helper คืน “วันนี้” แบบเวลาไทย
+  const bkkToday = () =>
+    new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Bangkok' });
+
+
   // Auth guard
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -172,7 +177,7 @@ export default function A1() {
   // Components 
   const DatePickerModal = () => {
     const [tempDate, setTempDate] = useState(
-      selectedDate || new Date().toISOString().split("T")[0]
+      selectedDate || bkkToday()
     );
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -184,7 +189,7 @@ export default function A1() {
             type="date"
             value={tempDate}
             onChange={(e) => setTempDate(e.target.value)}
-            max={new Date().toISOString().split("T")[0]}
+            max={bkkToday()}
             className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
           />
           <div className="flex gap-3">
@@ -196,8 +201,7 @@ export default function A1() {
             </button>
             <button
               onClick={() => {
-                if (tempDate === new Date().toISOString().split("T")[0]) {
-                  // เลือกวันนี้ - กลับเป็นวันล่าสุด
+                if (tempDate === bkkToday()) {
                   handleCustomDateConfirm("");
                 } else {
                   handleCustomDateConfirm(tempDate);
