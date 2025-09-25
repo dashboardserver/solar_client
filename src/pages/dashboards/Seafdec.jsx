@@ -4,24 +4,40 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 export default function Seafdec() {
   const navigate = useNavigate();
-  const SOURCE_KEY = "SEAFDEC"; // << ใช้ endpoint กลางตาม sourceKey นี้
+  const SOURCE_KEY = "SEAFDEC";
 
   const [showSettings, setShowSettings] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showLanguageOptions, setShowLanguageOptions] = useState(false);
   const [selectedImage, setSelectedImage] = useState("structure");
+  const [openingDate, setOpeningDate] = useState(null);
 
   useEffect(() => {
     const updateImage = () => {
       const now = new Date();
-      const minutes = now.getUTCMinutes(); // อิงเวลาโลก (UTC)
+      const minutes = now.getUTCMinutes();
       const halfHour = Math.floor(minutes / 30);
       setSelectedImage(halfHour % 2 === 0 ? "structure" : "map");
     };
 
-    updateImage(); // เรียกทันทีตอน mount
-    const id = setInterval(updateImage, 60 * 1000); // เช็คทุก 1 นาที
+    updateImage();
+    const id = setInterval(updateImage, 60 * 1000);
     return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    const loadOpening = async () => {
+      try {
+        const base = process.env.REACT_APP_API_BASE_URL;
+        const res = await fetch(`${base}/api/stations`);
+        const list = await res.json();
+        const st = list.find(x => String(x.key).toLowerCase() === "seafdec");
+        setOpeningDate(st?.openingDate || null);
+      } catch (err) {
+        console.warn("[OpeningDate] seafdec fetch failed", err);
+      }
+    };
+    loadOpening();
   }, []);
 
   // Data States
@@ -59,6 +75,8 @@ export default function Seafdec() {
         selectDate: "เลือกวันที่",
         confirm: "ยืนยัน",
         cancel: "ยกเลิก",
+        // เพิ่มข้อความใหม่สำหรับการแสดงผลวันเปิดใช้งาน
+        openingDateLabel: "วันเปิดใช้งาน",
       },
       en: {
         Revenue: "Save electricity cost",
@@ -83,8 +101,21 @@ export default function Seafdec() {
         selectDate: "Select Date",
         confirm: "Confirm",
         cancel: "Cancel",
+        // เพิ่มข้อความใหม่สำหรับการแสดงผลวันเปิดใช้งาน
+        openingDateLabel: "On system",
       },
     }[language];
+
+  // แปลง openingDate ข้อความตามภาษา
+  const openingDateText = () => {
+    // ลบการแสดงผลแบบ "— Not set —" เพราะจะใช้ conditional rendering แทน
+    if (!openingDate) return null; // ส่งค่า null กลับไปเพื่อไม่แสดงผล
+    const formatted = new Date(openingDate).toLocaleDateString(
+      language === "th" ? "th-TH" : "en-US",
+      { year: "numeric", month: "long", day: "numeric" }
+    );
+    return `${t.openingDateLabel}: ${formatted}`;
+  };
 
   //number helpers (show 0 properly) 
   const isNil = (v) => v === null || v === undefined;
@@ -331,37 +362,59 @@ export default function Seafdec() {
         {/* Right: KPI Panel (Desktop) */}
         <div className="w-[600px] p-6 flex flex-col gap-4 bg-white/20 backdrop-blur-xl shadow-2xl border-l border-white/30 h-screen">
           {/* Header */}
-          <div className="flex justify-end items-center gap-3 h-auto">
-            {/* Calendar */}
-            <button
-              onClick={handleDateModeChange}
-              className="group bg-white/80 backdrop-blur-sm text-blue-700 p-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300 border border-white/20"
-            >
-              <img src="/calendar.png" alt="calendar" className="h-5 w-5 group-hover:scale-110 transition-transform" />
-            </button>
+          <div className="flex justify-between items-center h-auto">
+            {/* On system */}
+            {openingDate && (
+              <div className="text-lg drop-shadow-sm whitespace-nowrap">
+                {openingDateText()}
+              </div>
+            )}
 
-            {/* Language */}
-            <div className="relative">
+            {/* button */}
+            <div className={`flex items-center gap-3 ${!openingDate ? 'ml-auto' : ''}`}>
+              {/* Calendar */}
               <button
-                onClick={() => setShowLanguageOptions(!showLanguageOptions)}
+                onClick={handleDateModeChange}
                 className="group bg-white/80 backdrop-blur-sm text-blue-700 p-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300 border border-white/20"
               >
-                <img src="/language.png" alt="lang" className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                <img
+                  src="/calendar.png"
+                  alt="calendar"
+                  className="h-5 w-5 group-hover:scale-110 transition-transform"
+                />
               </button>
-              {showLanguageOptions && <LanguageOptions />}
-            </div>
 
-            {/* Settings */}
-            <button
-              className="group bg-white/80 backdrop-blur-sm text-blue-700 p-3.5 rounded-xl shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300 border border-white/20"
-              onClick={() => setShowSettings(!showSettings)}
-            >
-              {showSettings ? (
-                <span className="group-hover:rotate-90 transition-transform inline-block">✕</span>
-              ) : (
-                <span className="group-hover:rotate-45 transition-transform inline-block">⚙️</span>
-              )}
-            </button>
+              {/* Language */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowLanguageOptions(!showLanguageOptions)}
+                  className="group bg-white/80 backdrop-blur-sm text-blue-700 p-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300 border border-white/20"
+                >
+                  <img
+                    src="/language.png"
+                    alt="lang"
+                    className="h-5 w-5 group-hover:scale-110 transition-transform"
+                  />
+                </button>
+                {showLanguageOptions && <LanguageOptions />}
+              </div>
+
+              {/* Settings */}
+              <button
+                className="group bg-white/80 backdrop-blur-sm text-blue-700 p-3.5 rounded-xl shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300 border border-white/20"
+                onClick={() => setShowSettings(!showSettings)}
+              >
+                {showSettings ? (
+                  <span className="group-hover:rotate-90 transition-transform inline-block">
+                    ✕
+                  </span>
+                ) : (
+                  <span className="group-hover:rotate-45 transition-transform inline-block">
+                    ⚙️
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Body */}
@@ -586,6 +639,11 @@ export default function Seafdec() {
               {/* Header */}
               <div className="flex justify-end items-center gap-2">
                 {/* button calendar */}
+                {openingDate && (
+                  <div className="text-xs md:text-sm text-black/80">
+                    {t.openingDateLabel}: {new Date(openingDate).toLocaleDateString("th-TH", { year: "numeric", month: "long", day: "numeric" })}
+                  </div>
+                )}
                 <button
                   onClick={handleDateModeChange}
                   className="group bg-white/80 backdrop-blur-sm text-blue-700 p-2 rounded-xl shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300 border border-white/20"
@@ -838,6 +896,11 @@ export default function Seafdec() {
         <div className="p-4 flex flex-col gap-2 bg-white/20 backdrop-blur-xl shadow-2xl border-t border-white/30">
           {/* Header */}
           <div className="flex justify-center items-center gap-2 flex-wrap">
+            {openingDate && (
+              <div className="text-xs md:text-sm text-black/80">
+                {t.openingDateLabel}: {new Date(openingDate).toLocaleDateString("th-TH", { year: "numeric", month: "long", day: "numeric" })}
+              </div>
+            )}
             {/* button calender */}
             <button
               onClick={handleDateModeChange}
