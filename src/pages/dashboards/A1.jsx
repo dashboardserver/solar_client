@@ -38,57 +38,56 @@ export default function A1() {
     localStorage.setItem("lang", language);
   }, [language]);
 
-  const t =
-    {
-      th: {
-        Revenue: "ประหยัดค่าไฟฟ้า",
-        Today: "วันนี้",
-        Month: "เดือน",
-        Total: "รวม",
-        Yield: "พลังงานที่ผลิต",
-        tree: "เทียบเท่าการปลูกต้นไม้ได้",
-        co2Avoided: "ลดการปล่อย CO₂",
-        trees: "ต้น",
-        kwh: "กิโลวัตต์",
-        ton: "ตัน",
-        bath: "บาท",
-        eng: "อังกฤษ",
-        thai: "ไทย",
-        todayText: "แสดงข้อมูลของวันนี้",
-        dateText: (date) => `แสดงข้อมูลของวันที่ ${date}`,
-        name: "ชื่อ",
-        status: "สถานะ",
-        logout: "ออกจากระบบ",
-        selectDate: "เลือกวันที่",
-        confirm: "ยืนยัน",
-        cancel: "ยกเลิก",
-        openingDateLabel: "วันเปิดใช้งาน",
-      },
-      en: {
-        Revenue: "Save electricity cost",
-        Today: "Today",
-        Month: "Month",
-        Total: "Total",
-        Yield: "Energy Yield",
-        tree: "Equivalent trees planted",
-        co2Avoided: "CO₂ avoided",
-        trees: "Trees",
-        kwh: "KWh",
-        ton: "Tons",
-        bath: "฿",
-        eng: "ENG",
-        thai: "THAI",
-        todayText: "Show today's information",
-        dateText: (date) => `Show information of the date ${date}`,
-        name: "Name",
-        status: "Status",
-        logout: "Logout",
-        selectDate: "Select Date",
-        confirm: "Confirm",
-        cancel: "Cancel",
-        openingDateLabel: "On system",
-      },
-    }[language];
+  const t = {
+    th: {
+      Revenue: "ประหยัดค่าไฟฟ้า",
+      Today: "วันนี้",
+      Month: "เดือน",
+      Total: "รวม",
+      Yield: "พลังงานที่ผลิต",
+      tree: "เทียบเท่าการปลูกต้นไม้ได้",
+      co2Avoided: "ลดการปล่อย CO₂",
+      trees: "ต้น",
+      kwh: "กิโลวัตต์",
+      ton: "ตัน",
+      bath: "บาท",
+      eng: "อังกฤษ",
+      thai: "ไทย",
+      todayText: "แสดงข้อมูลของวันนี้",
+      dateText: (date) => `แสดงข้อมูลของวันที่ ${date}`,
+      name: "ชื่อ",
+      status: "สถานะ",
+      logout: "ออกจากระบบ",
+      selectDate: "เลือกวันที่",
+      confirm: "ยืนยัน",
+      cancel: "ยกเลิก",
+      openingDateLabel: "วันเปิดใช้งาน",
+    },
+    en: {
+      Revenue: "Save electricity cost",
+      Today: "Today",
+      Month: "Month",
+      Total: "Total",
+      Yield: "Energy Yield",
+      tree: "Equivalent trees planted",
+      co2Avoided: "CO₂ avoided",
+      trees: "Trees",
+      kwh: "KWh",
+      ton: "Tons",
+      bath: "฿",
+      eng: "ENG",
+      thai: "THAI",
+      todayText: "Show today's information",
+      dateText: (date) => `Show information of the date ${date}`,
+      name: "Name",
+      status: "Status",
+      logout: "Logout",
+      selectDate: "Select Date",
+      confirm: "Confirm",
+      cancel: "Cancel",
+      openingDateLabel: "On system",
+    },
+  }[language];
 
   // ✅ แปลงวันที่แบบสวยงามตามภาษา
   const formatDateForDisplay = (dateString) => {
@@ -129,8 +128,8 @@ export default function A1() {
           maximumFractionDigits: digits,
         });
   const fmtInt = (v) =>
-  isNil(v) ? "-" : Math.floor(Number(v)).toLocaleString("en-US");
-  
+    isNil(v) ? "-" : Math.floor(Number(v)).toLocaleString("en-US");
+
   const fmtTon = (v) =>
     isNil(v)
       ? "-"
@@ -272,12 +271,21 @@ export default function A1() {
         <div className="flex-1 relative min-h-screen flex flex-col">
           {/* LOGO */}
           <div className="w-full flex justify-center mt-3">
-            <img src="/yiplogo.png" alt="logo" className="h-[120px] object-contain" />
+            <img
+              src="/yiplogo.png"
+              alt="logo"
+              className="h-[120px] object-contain"
+            />
           </div>
 
           {/* Only yipintsoi.png */}
           <div className="flex-1 flex items-start justify-center relative">
-            <TransformWrapper initialScale={1} minScale={0.3} maxScale={1} centerOnInit>
+            <TransformWrapper
+              initialScale={1}
+              minScale={0.3}
+              maxScale={1}
+              centerOnInit
+            >
               <TransformComponent>
                 <div className="relative flex py-8">
                   <img
@@ -297,7 +305,11 @@ export default function A1() {
               <div className="flex flex-col">
                 <div className="flex items-center -mt-1">
                   <p className="text-black mt-5">Operated by</p>
-                  <img src="/solaryn.svg" alt="solaryn" className="h-[100px] absolute pl-20 pt-5" />
+                  <img
+                    src="/solaryn.svg"
+                    alt="solaryn"
+                    className="h-[100px] absolute pl-20 pt-5"
+                  />
                 </div>
                 <p className="text-black">Contact (0) 2353 8600 Ext. 5504</p>
               </div>
@@ -320,7 +332,11 @@ export default function A1() {
             )}
 
             {/* buttons */}
-            <div className={`flex items-center gap-3 ${!openingDate ? "ml-auto" : ""}`}>
+            <div
+              className={`flex items-center gap-3 ${
+                !openingDate ? "ml-auto" : ""
+              }`}
+            >
               {/* Calendar */}
               <button
                 onClick={handleDateModeChange}
@@ -377,7 +393,9 @@ export default function A1() {
                   <p className="text-2xl font-semibold text-blue-900 mb-1">
                     {t.name} : {localStorage.getItem("username")}
                   </p>
-                  <p className="text-2lx text-blue-600">{t.status} : {localStorage.getItem("role")}</p>
+                  <p className="text-2lx text-blue-600">
+                    {t.status} : {localStorage.getItem("role")}
+                  </p>
                 </div>
                 <button
                   onClick={handleLogout}
@@ -389,7 +407,9 @@ export default function A1() {
             </div>
           ) : (
             <div className="flex flex-col gap-4 flex-1">
-              <p className="text-sm text-right text-gray-600 italic">{getDateDisplayText()}</p>
+              <p className="text-sm text-right text-gray-600 italic">
+                {getDateDisplayText()}
+              </p>
 
               {/* Revenue */}
               <div className="bg-gradient-to-br from-lightblue rounded-2xl p-8 shadow">
@@ -459,7 +479,9 @@ export default function A1() {
                 <div className="flex items-center">
                   <img src="/co2.png" alt="co2" className="h-24 pl-2" />
                   <div className="flex-auto ml-8">
-                    <p className="text-2xl font-bold text-textc">{t.co2Avoided}</p>
+                    <p className="text-2xl font-bold text-textc">
+                      {t.co2Avoided}
+                    </p>
                     <p className="text-2xl text-textc">
                       {fmtTon(kpi?.co2_avoided)} {t.ton}
                     </p>
@@ -479,13 +501,21 @@ export default function A1() {
             <div className="flex-1 flex flex-col relative">
               {/* LOGO */}
               <div className="flex justify-center items-center mt-3 mb-4">
-                <img src="/slogo.png" alt="logo" className="h-[90px] object-contain" />
-                <img src="/seafdeclogo.png" alt="logo" className="h-[90px] object-contain" />
+                <img
+                  src="/yiplogo.png"
+                  alt="logo"
+                  className="h-[90px] object-contain"
+                />
               </div>
 
               {/* Only yipintsoi.png */}
               <div className="flex-col justify-center relative">
-                <TransformWrapper initialScale={1} minScale={0.3} maxScale={1} centerOnInit>
+                <TransformWrapper
+                  initialScale={1}
+                  minScale={0.3}
+                  maxScale={1}
+                  centerOnInit
+                >
                   <TransformComponent>
                     <div className="relative flex justify-center items-center py-4">
                       <img
@@ -504,9 +534,15 @@ export default function A1() {
                     <div className="flex flex-col">
                       <div className="flex items-center -mt-1">
                         <p className="text-sm text-black mt-3">Operated by</p>
-                        <img src="/solaryn.svg" alt="solaryn" className="h-[70px] absolute pl-16 pt-3" />
+                        <img
+                          src="/solaryn.svg"
+                          alt="solaryn"
+                          className="h-[70px] absolute pl-16 pt-3"
+                        />
                       </div>
-                      <p className="text-sm text-black">Contact (0) 2353 8600 Ext. 5504</p>
+                      <p className="text-sm text-black">
+                        Contact (0) 2353 8600 Ext. 5504
+                      </p>
                     </div>
                     <div className="flex items-center mt-1 -ml-2">
                       <img src="/qr.svg" alt="qr" className="h-14" />
@@ -555,9 +591,13 @@ export default function A1() {
                   onClick={() => setShowSettings(!showSettings)}
                 >
                   {showSettings ? (
-                    <span className="group-hover:rotate-90 transition-transform inline-block">✕</span>
+                    <span className="group-hover:rotate-90 transition-transform inline-block">
+                      ✕
+                    </span>
                   ) : (
-                    <span className="group-hover:rotate-45 transition-transform inline-block">⚙️</span>
+                    <span className="group-hover:rotate-45 transition-transform inline-block">
+                      ⚙️
+                    </span>
                   )}
                 </button>
               </div>
@@ -572,7 +612,9 @@ export default function A1() {
                       <p className="text-base font-semibold text-blue-900 mb-1">
                         {t.name} : {localStorage.getItem("username")}
                       </p>
-                      <p className="text-sm text-blue-600">{t.status} : {localStorage.getItem("role")}</p>
+                      <p className="text-sm text-blue-600">
+                        {t.status} : {localStorage.getItem("role")}
+                      </p>
                     </div>
                     <button
                       onClick={handleLogout}
@@ -584,21 +626,33 @@ export default function A1() {
                 </div>
               ) : (
                 <div className="flex flex-col gap-3 flex-1">
-                  <p className="text-xs text-right text-gray-600 italic">{getDateDisplayText()}</p>
+                  <p className="text-xs text-right text-gray-600 italic">
+                    {getDateDisplayText()}
+                  </p>
 
                   {/* Revenue */}
                   <div className="bg-gradient-to-br from-lightblue rounded-xl p-3 shadow">
                     <div className="flex items-center">
-                      <img src="/income.png" alt="income" className="h-16 ml-2" />
+                      <img
+                        src="/income.png"
+                        alt="income"
+                        className="h-16 ml-2"
+                      />
                       <div className="flex-auto ml-4 pr-16">
-                        <p className="text-lg font-bold text-textc">{t.Revenue}</p>
+                        <p className="text-lg font-bold text-textc">
+                          {t.Revenue}
+                        </p>
                         <div className="flex justify-between">
                           <p className="text-sm text-textc">{t.Today}:</p>
-                          <p className="text-sm text-textc">{fmt(kpi?.day_income, 2)} {t.bath}</p>
+                          <p className="text-sm text-textc">
+                            {fmt(kpi?.day_income, 2)} {t.bath}
+                          </p>
                         </div>
                         <div className="flex justify-between">
                           <p className="text-sm text-textc">{t.Total}:</p>
-                          <p className="text-sm text-textc">{fmt(kpi?.total_income, 2)} {t.bath}</p>
+                          <p className="text-sm text-textc">
+                            {fmt(kpi?.total_income, 2)} {t.bath}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -609,18 +663,26 @@ export default function A1() {
                     <div className="flex items-center">
                       <img src="/power.png" alt="power" className="h-16 ml-2" />
                       <div className="flex-auto ml-4 pr-9">
-                        <p className="text-lg font-bold text-textc">{t.Yield}</p>
+                        <p className="text-lg font-bold text-textc">
+                          {t.Yield}
+                        </p>
                         <div className="flex justify-between">
                           <p className="text-sm text-textc">{t.Today}:</p>
-                          <p className="text-sm text-textc">{fmt(kpi?.day_power, 2)} {t.kwh}</p>
+                          <p className="text-sm text-textc">
+                            {fmt(kpi?.day_power, 2)} {t.kwh}
+                          </p>
                         </div>
                         <div className="flex justify-between">
                           <p className="text-sm text-textc">{t.Month}:</p>
-                          <p className="text-sm text-textc">{fmt(kpi?.month_power, 2)} {t.kwh}</p>
+                          <p className="text-sm text-textc">
+                            {fmt(kpi?.month_power, 2)} {t.kwh}
+                          </p>
                         </div>
                         <div className="flex justify-between">
                           <p className="text-sm text-textc">{t.Total}:</p>
-                          <p className="text-sm text-textc">{fmt(kpi?.total_power, 2)} {t.kwh}</p>
+                          <p className="text-sm text-textc">
+                            {fmt(kpi?.total_power, 2)} {t.kwh}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -632,7 +694,9 @@ export default function A1() {
                       <img src="/trees.png" alt="trees" className="h-16 pl-1" />
                       <div className="flex-auto ml-4">
                         <p className="text-lg font-bold text-textc">{t.tree}</p>
-                        <p className="text-sm text-textc">{fmtInt(kpi?.equivalent_trees)} {t.trees}</p>
+                        <p className="text-sm text-textc">
+                          {fmtInt(kpi?.equivalent_trees)} {t.trees}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -642,8 +706,12 @@ export default function A1() {
                     <div className="flex items-center">
                       <img src="/co2.png" alt="co2" className="h-16 pl-1" />
                       <div className="flex-auto ml-4">
-                        <p className="text-lg font-bold text-textc">{t.co2Avoided}</p>
-                        <p className="text-sm text-textc">{fmtTon(kpi?.co2_avoided)} {t.ton}</p>
+                        <p className="text-lg font-bold text-textc">
+                          {t.co2Avoided}
+                        </p>
+                        <p className="text-sm text-textc">
+                          {fmtTon(kpi?.co2_avoided)} {t.ton}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -658,13 +726,21 @@ export default function A1() {
       <div className="md:hidden flex flex-col min-h-screen">
         {/* LOGO */}
         <div className=" flex justify-center items-center mt-4">
-          <img src="/slogo.png" alt="logo" className="h-[70px] object-contain" />
-          <img src="/seafdeclogo.png" alt="logo" className="h-[70px] object-contain" />
+          <img
+            src="/yiplogo.png"
+            alt="logo"
+            className="h-[70px] object-contain"
+          />
         </div>
 
         {/* Only yipintsoi.png */}
         <div className="flex-1 flex justify-center items-center pt-3">
-          <TransformWrapper initialScale={1} minScale={0.3} maxScale={1} centerOnInit>
+          <TransformWrapper
+            initialScale={1}
+            minScale={0.3}
+            maxScale={1}
+            centerOnInit
+          >
             <TransformComponent>
               <div className="relative flex justify-center items-center py-8">
                 <img
@@ -717,9 +793,13 @@ export default function A1() {
               onClick={() => setShowSettings(!showSettings)}
             >
               {showSettings ? (
-                <span className="group-hover:rotate-90 transition-transform inline-block">✕</span>
+                <span className="group-hover:rotate-90 transition-transform inline-block">
+                  ✕
+                </span>
               ) : (
-                <span className="group-hover:rotate-45 transition-transform inline-block">⚙️</span>
+                <span className="group-hover:rotate-45 transition-transform inline-block">
+                  ⚙️
+                </span>
               )}
             </button>
           </div>
@@ -820,7 +900,9 @@ export default function A1() {
                 <div className="flex items-center mb-2">
                   <img src="/co2.png" alt="co2" className="h-20 pl-2" />
                   <div className="flex-auto ml-4">
-                    <p className="text-xl font-bold text-textc">{t.co2Avoided}</p>
+                    <p className="text-xl font-bold text-textc">
+                      {t.co2Avoided}
+                    </p>
                     <p className="text-lg text-textc">
                       {fmtTon(kpi?.co2_avoided)} {t.ton}
                     </p>
@@ -834,9 +916,15 @@ export default function A1() {
                   <div className="flex flex-col">
                     <div className="flex items-center -mt-1">
                       <p className="text-sm text-black mt-5">Operated by</p>
-                      <img src="/solaryn.svg" alt="solaryn" className="h-[90px] absolute pl-16 pt-5" />
+                      <img
+                        src="/solaryn.svg"
+                        alt="solaryn"
+                        className="h-[90px] absolute pl-16 pt-5"
+                      />
                     </div>
-                    <p className="text-sm text-black">Contact (0) 2353 8600 Ext. 5504</p>
+                    <p className="text-sm text-black">
+                      Contact (0) 2353 8600 Ext. 5504
+                    </p>
                   </div>
                   <div className="flex items-center mt-2 -ml-2">
                     <img src="/qr.svg" alt="qr" className="h-12" />
