@@ -9,21 +9,7 @@ export default function A1() {
   const [showSettings, setShowSettings] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showLanguageOptions, setShowLanguageOptions] = useState(false);
-  const [selectedImage, setSelectedImage] = useState("structure");
   const [openingDate, setOpeningDate] = useState(null);
-
-  useEffect(() => {
-    const updateImage = () => {
-      const now = new Date();
-      const minutes = now.getUTCMinutes(); // อิงเวลาโลก (UTC)
-      const halfHour = Math.floor(minutes / 30);
-      setSelectedImage(halfHour % 2 === 0 ? "structure" : "map");
-    };
-
-    updateImage(); // เรียกทันทีตอน mount
-    const id = setInterval(updateImage, 60 * 1000); // เช็คทุก 1 นาที
-    return () => clearInterval(id);
-  }, []);
 
   useEffect(() => {
     const loadOpening = async () => {
@@ -31,10 +17,10 @@ export default function A1() {
         const base = process.env.REACT_APP_API_BASE_URL;
         const res = await fetch(`${base}/api/stations`);
         const list = await res.json();
-        const st = list.find(x => String(x.key).toLowerCase() === 'a1');
+        const st = list.find((x) => String(x.key).toLowerCase() === "a1");
         setOpeningDate(st?.openingDate || null);
       } catch (err) {
-        console.warn('[OpeningDate] a1 fetch failed', err);
+        console.warn("[OpeningDate] a1 fetch failed", err);
       }
     };
     loadOpening();
@@ -45,15 +31,18 @@ export default function A1() {
   const [selectedDate, setSelectedDate] = useState("");
 
   // Language
-  const [language, setLanguage] = useState(() => localStorage.getItem("lang") || "en");
-  useEffect(() => { localStorage.setItem("lang", language); }, [language]);
+  const [language, setLanguage] = useState(
+    () => localStorage.getItem("lang") || "en"
+  );
+  useEffect(() => {
+    localStorage.setItem("lang", language);
+  }, [language]);
 
   const t =
     {
       th: {
         Revenue: "ประหยัดค่าไฟฟ้า",
         Today: "วันนี้",
-        Yesterday: "เมื่อวาน",
         Month: "เดือน",
         Total: "รวม",
         Yield: "พลังงานที่ผลิต",
@@ -73,13 +62,11 @@ export default function A1() {
         selectDate: "เลือกวันที่",
         confirm: "ยืนยัน",
         cancel: "ยกเลิก",
-        // เพิ่มข้อความใหม่สำหรับการแสดงผลวันเปิดใช้งาน
         openingDateLabel: "วันเปิดใช้งาน",
       },
       en: {
         Revenue: "Save electricity cost",
         Today: "Today",
-        Yesterday: "Yesterday",
         Month: "Month",
         Total: "Total",
         Yield: "Energy Yield",
@@ -90,7 +77,7 @@ export default function A1() {
         ton: "Tons",
         bath: "฿",
         eng: "ENG",
-        thai: "ไทย",
+        thai: "THAI",
         todayText: "Show today's information",
         dateText: (date) => `Show information of the date ${date}`,
         name: "Name",
@@ -99,59 +86,68 @@ export default function A1() {
         selectDate: "Select Date",
         confirm: "Confirm",
         cancel: "Cancel",
-        // เพิ่มข้อความใหม่สำหรับการแสดงผลวันเปิดใช้งาน
         openingDateLabel: "On system",
       },
     }[language];
 
-  // แปลง openingDate ข้อความตามภาษา
+  // ✅ แปลงวันที่แบบสวยงามตามภาษา
+  const formatDateForDisplay = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+
+    if (language === "th") {
+      // 4 ต.ค. 2568
+      return date.toLocaleDateString("th-TH", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+    }
+
+    // 4 Oct 2025
+    return date.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  // แปลง openingDate เป็นข้อความ (ใช้รูปแบบเดียวกับด้านบน)
   const openingDateText = () => {
-    if (!openingDate) return null; // ส่งค่า null กลับไปเพื่อไม่แสดงผล
-    const formatted = new Date(openingDate).toLocaleDateString(
-      language === "th" ? "th-TH" : "en-US",
-      { year: "numeric", month: "long", day: "numeric" }
-    );
+    if (!openingDate) return null;
+    const formatted = formatDateForDisplay(openingDate);
     return `${t.openingDateLabel}: ${formatted}`;
   };
 
-  //number helpers (show 0 properly) 
+  // number helpers
   const isNil = (v) => v === null || v === undefined;
-
   const fmt = (v, digits = 2) =>
     isNil(v)
-      ? '-'
-      : Number(v).toLocaleString('en-US', {
-        minimumFractionDigits: digits,
-        maximumFractionDigits: digits,
-      });
-
+      ? "-"
+      : Number(v).toLocaleString("en-US", {
+          minimumFractionDigits: digits,
+          maximumFractionDigits: digits,
+        });
   const fmtInt = (v) =>
-    isNil(v) ? '-' : Number(v).toLocaleString('en-US');
-
+  isNil(v) ? "-" : Math.floor(Number(v)).toLocaleString("en-US");
+  
   const fmtTon = (v) =>
     isNil(v)
-      ? '-'
-      : (Number(v) / 1000).toLocaleString('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
+      ? "-"
+      : (Number(v) / 1000).toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
 
-  //helper คืน “วันนี้” แบบเวลาไทย
+  // คืน “วันนี้” เป็น yyyy-mm-dd ตามโซนเวลาไทย สำหรับ input[type=date]
   const bkkToday = () =>
-    new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Bangkok' });
-
+    new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Bangkok" });
 
   // Auth guard
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) window.location.href = "/";
   }, []);
-
-  const formatDateForDisplay = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString(language === "th" ? "th-TH" : "en-US");
-  };
 
   const fetchKPI = useCallback(async () => {
     try {
@@ -178,22 +174,21 @@ export default function A1() {
     navigate("/");
   };
 
-  // select date
+  // Date picker
   const handleDateModeChange = () => setShowDatePicker(true);
-
   const handleCustomDateConfirm = (date) => {
-    setSelectedDate(date);
+    setSelectedDate(date === bkkToday() ? "" : date);
     setShowDatePicker(false);
   };
   const handleCustomDateCancel = () => setShowDatePicker(false);
 
-  // language
+  // Language
   const handleLanguageSelect = (selectedLanguage) => {
     setLanguage(selectedLanguage);
     setShowLanguageOptions(false);
   };
 
-  // ข้อความวันที่
+  // ข้อความวันที่มุมขวาบนของ panel
   const getDateDisplayText = () => {
     if (!selectedDate) {
       return kpi?.date
@@ -204,11 +199,9 @@ export default function A1() {
     }
   };
 
-  // Components 
+  // Modal เลือกวันที่
   const DatePickerModal = () => {
-    const [tempDate, setTempDate] = useState(
-      selectedDate || bkkToday()
-    );
+    const [tempDate, setTempDate] = useState(selectedDate || bkkToday());
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl p-6 shadow-2xl max-w-sm w-full">
@@ -230,13 +223,7 @@ export default function A1() {
               {t.cancel}
             </button>
             <button
-              onClick={() => {
-                if (tempDate === bkkToday()) {
-                  handleCustomDateConfirm("");
-                } else {
-                  handleCustomDateConfirm(tempDate);
-                }
-              }}
+              onClick={() => handleCustomDateConfirm(tempDate)}
               className="flex-1 bg-blue-500 text-white px-4 py-3 rounded-xl font-medium hover:bg-blue-600 transition-colors"
             >
               {t.confirm}
@@ -251,26 +238,27 @@ export default function A1() {
     <div className="absolute top-full right-0 mt-2 bg-white/90 backdrop-blur-lg rounded-xl shadow-xl border border-white/30 overflow-hidden z-40">
       <button
         onClick={() => handleLanguageSelect("th")}
-        className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${language === "th"
-          ? "bg-blue-100 text-blue-700 font-semibold"
-          : "text-gray-700"
-          }`}
+        className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${
+          language === "th"
+            ? "bg-blue-100 text-blue-700 font-semibold"
+            : "text-gray-700"
+        }`}
       >
         ไทย
       </button>
       <button
         onClick={() => handleLanguageSelect("en")}
-        className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${language === "en"
-          ? "bg-blue-100 text-blue-700 font-semibold"
-          : "text-gray-700"
-          }`}
+        className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${
+          language === "en"
+            ? "bg-blue-100 text-blue-700 font-semibold"
+            : "text-gray-700"
+        }`}
       >
         ENG
       </button>
     </div>
   );
 
-  // Render 
   return (
     <div className="relative w-full h-full">
       <div className="absolute inset-0 bg-gradient-to-b from-sky-300 to-bgblue -z-10" />
@@ -278,66 +266,29 @@ export default function A1() {
       {/* Date Picker Modal */}
       {showDatePicker && <DatePickerModal />}
 
-      {/* Desktop Layout */}
+      {/* ===== Desktop Layout ===== */}
       <div className="hidden xl:flex xl:flex-row h-screen">
-        {/* Left: Structure/Map */}
+        {/* Left: Image */}
         <div className="flex-1 relative min-h-screen flex flex-col">
           {/* LOGO */}
           <div className="w-full flex justify-center mt-3">
-            <img src="/slogo.png" alt="logo" className="h-[120px] object-contain " />
-            <img src="/seafdeclogo.png" alt="logo" className="h-[120px] object-contain" />
+            <img src="/yiplogo.png" alt="logo" className="h-[120px] object-contain" />
           </div>
 
-          {/* Structure / Map */}
+          {/* Only yipintsoi.png */}
           <div className="flex-1 flex items-start justify-center relative">
             <TransformWrapper initialScale={1} minScale={0.3} maxScale={1} centerOnInit>
               <TransformComponent>
-                {selectedImage === "structure" ? (
-                  <div className="relative flex py-8">
-                    <img
-                      src="/flag.svg"
-                      alt="flag"
-                      className="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-10 h-100"
-                    />
-                    <img
-                      src="/structure.png"
-                      alt="structure"
-                      className="max-w-full max-h=[calc(100vh-10rem)] object-contain"
-                      draggable={false}
-                    />
-                  </div>
-                ) : (
-                  <div className="relative flex justify-center items-center">
-                    <img
-                      src="/map.png"
-                      alt="map"
-                      className="max-w-full max-h-[calc(90vh-10rem)] object-contain"
-                      draggable={false}
-                    />
-                  </div>
-                )}
+                <div className="relative flex py-8">
+                  <img
+                    src="/yipintsoi.png"
+                    alt="yipintsoi"
+                    className="max-w-full max-h=[calc(100vh-10rem)] object-contain"
+                    draggable={false}
+                  />
+                </div>
               </TransformComponent>
             </TransformWrapper>
-
-            {/* Image Selection Buttons */}
-            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
-              <div className="flex gap-2 bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/20">
-                <button
-                  onClick={() => setSelectedImage("structure")}
-                  className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "structure" ? "border-blue-500 bg-blue-100" : "border-transparent"
-                    }`}
-                >
-                  <img src="/structure.png" alt="structure" className="h-8 w-8 object-contain" />
-                </button>
-                <button
-                  onClick={() => setSelectedImage("map")}
-                  className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "map" ? "border-blue-500 bg-blue-100" : "border-transparent"
-                    }`}
-                >
-                  <img src="/map.png" alt="map" className="h-8 w-8 object-contain" />
-                </button>
-              </div>
-            </div>
           </div>
 
           {/* Contact */}
@@ -368,8 +319,8 @@ export default function A1() {
               </div>
             )}
 
-            {/* button */}
-            <div className={`flex items-center gap-3 ${!openingDate ? 'ml-auto' : ''}`}>
+            {/* buttons */}
+            <div className={`flex items-center gap-3 ${!openingDate ? "ml-auto" : ""}`}>
               {/* Calendar */}
               <button
                 onClick={handleDateModeChange}
@@ -443,11 +394,11 @@ export default function A1() {
               {/* Revenue */}
               <div className="bg-gradient-to-br from-lightblue rounded-2xl p-8 shadow">
                 <div className="flex items-center">
-                  <img src="/income.png" alt="logo" className="h-24 ml-8" />
+                  <img src="/income.png" alt="income" className="h-24 ml-8" />
                   <div className="flex-auto ml-8 mr-16">
                     <p className="text-2xl font-bold text-textc">{t.Revenue}</p>
                     <div className="flex justify-between">
-                      <p className="text-2xl text-textc">{!selectedDate ? t.Today : "วัน"}:</p>
+                      <p className="text-2xl text-textc">{t.Today}:</p>
                       <p className="text-2xl text-textc mr-8">
                         {fmt(kpi?.day_income, 2)} {t.bath}
                       </p>
@@ -465,11 +416,11 @@ export default function A1() {
               {/* Yield */}
               <div className="bg-gradient-to-br from-lightblue rounded-xl p-8 shadow">
                 <div className="flex items-center ">
-                  <img src="/power.png" alt="logo" className="h-24 ml-4" />
+                  <img src="/power.png" alt="power" className="h-24 ml-4" />
                   <div className="flex-auto ml-8 mr-16">
                     <p className="text-2xl font-bold text-textc">{t.Yield}</p>
                     <div className="flex justify-between ">
-                      <p className="text-2xl text-textc">{!selectedDate ? t.Today : "วัน"}:</p>
+                      <p className="text-2xl text-textc">{t.Today}:</p>
                       <p className="text-2xl text-textc">
                         {fmt(kpi?.day_power, 2)} {t.kwh}
                       </p>
@@ -493,7 +444,7 @@ export default function A1() {
               {/* Trees */}
               <div className="bg-gradient-to-br from-lightblue rounded-xl p-8 shadow">
                 <div className="flex items-center">
-                  <img src="/trees.png" alt="logo" className="h-24 pl-2" />
+                  <img src="/trees.png" alt="trees" className="h-24 pl-2" />
                   <div className="flex-1 ml-8">
                     <p className="text-2xl font-bold text-textc">{t.tree}</p>
                     <p className="text-2xl text-textc">
@@ -506,7 +457,7 @@ export default function A1() {
               {/* CO2 avoided */}
               <div className="bg-gradient-to-br from-lightblue rounded-xl p-8 shadow">
                 <div className="flex items-center">
-                  <img src="/co2.png" alt="logo" className="h-24 pl-2" />
+                  <img src="/co2.png" alt="co2" className="h-24 pl-2" />
                   <div className="flex-auto ml-8">
                     <p className="text-2xl font-bold text-textc">{t.co2Avoided}</p>
                     <p className="text-2xl text-textc">
@@ -519,94 +470,33 @@ export default function A1() {
           )}
         </div>
       </div>
-      {/* iPad Layout */}
+
+      {/* ===== iPad Layout ===== */}
       <div className="hidden md:block xl:hidden">
         <div className="flex flex-col h-screen">
-          {/* Main Content Area */}
           <div className="flex flex-1 gap-4 ">
-            {/* Structure */}
+            {/* Image */}
             <div className="flex-1 flex flex-col relative">
               {/* LOGO */}
               <div className="flex justify-center items-center mt-3 mb-4">
-                <img
-                  src="/slogo.png"
-                  alt="logo"
-                  className="h-[90px] object-contain"
-                />
-                <img
-                  src="/seafdeclogo.png"
-                  alt="logo"
-                  className="h-[90px] object-contain"
-                />
+                <img src="/slogo.png" alt="logo" className="h-[90px] object-contain" />
+                <img src="/seafdeclogo.png" alt="logo" className="h-[90px] object-contain" />
               </div>
 
-              {/* structure */}
+              {/* Only yipintsoi.png */}
               <div className="flex-col justify-center relative">
-                <TransformWrapper
-                  initialScale={1}
-                  minScale={0.3}
-                  maxScale={1}
-                  centerOnInit
-                >
+                <TransformWrapper initialScale={1} minScale={0.3} maxScale={1} centerOnInit>
                   <TransformComponent>
-                    {selectedImage === "structure" ? (
-                      <div className="relative flex justify-center items-center py-4">
-                        <img
-                          src="/flag.svg"
-                          alt="flag"
-                          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 h-100"
-                        />
-                        <img
-                          src="/structure.png"
-                          alt="structure"
-                          className="max-w-full max-h-[calc(100vh-15rem)] object-contain"
-                          draggable={false}
-                        />
-                      </div>
-                    ) : (
-                      <div className="relative flex justify-center items-center">
-                        <img
-                          src="/map.png"
-                          alt="map"
-                          className="max-w-full max-h-[calc(100vh-15rem)] object-contain"
-                          draggable={false}
-                        />
-                      </div>
-                    )}
+                    <div className="relative flex justify-center items-center py-4">
+                      <img
+                        src="/yipintsoi.png"
+                        alt="yipintsoi"
+                        className="max-w-full max-h-[calc(100vh-15rem)] object-contain"
+                        draggable={false}
+                      />
+                    </div>
                   </TransformComponent>
                 </TransformWrapper>
-
-                {/* Image Selection Buttons */}
-                <div className="flex justify-center items-center w-full">
-                  <div className="flex gap-2 bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/20">
-                    <button
-                      onClick={() => setSelectedImage("structure")}
-                      className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "structure"
-                        ? "border-blue-500 bg-blue-100"
-                        : "border-transparent"
-                        }`}
-                    >
-                      <img
-                        src="/structure.png"
-                        alt="structure"
-                        className="h-6 w-6 object-contain"
-                      />
-                    </button>
-                    <button
-                      onClick={() => setSelectedImage("map")}
-                      className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "map"
-                        ? "border-blue-500 bg-blue-100"
-                        : "border-transparent"
-                        }`}
-                    >
-                      <img
-                        src="/map.png"
-                        alt="map"
-                        className="h-6 w-6 object-contain"
-                      />
-                    </button>
-                  </div>
-                </div>
 
                 {/* Contact */}
                 <div className="ml-8 mt-4">
@@ -614,15 +504,9 @@ export default function A1() {
                     <div className="flex flex-col">
                       <div className="flex items-center -mt-1">
                         <p className="text-sm text-black mt-3">Operated by</p>
-                        <img
-                          src="/solaryn.svg"
-                          alt="solaryn"
-                          className="h-[70px] absolute pl-16 pt-3"
-                        />
+                        <img src="/solaryn.svg" alt="solaryn" className="h-[70px] absolute pl-16 pt-3" />
                       </div>
-                      <p className="text-sm text-black">
-                        Contact (0) 2353 8600 Ext. 5504
-                      </p>
+                      <p className="text-sm text-black">Contact (0) 2353 8600 Ext. 5504</p>
                     </div>
                     <div className="flex items-center mt-1 -ml-2">
                       <img src="/qr.svg" alt="qr" className="h-14" />
@@ -636,10 +520,9 @@ export default function A1() {
             <div className="w-[350px] flex flex-col gap-3 bg-white/20 backdrop-blur-xl shadow-2xl border border-white/30 rounded-2xl p-4">
               {/* Header */}
               <div className="flex justify-end items-center gap-2">
-                {/* button calendar */}
                 {openingDate && (
                   <div className="text-xs md:text-sm text-black/80">
-                    {t.openingDateLabel}: {new Date(openingDate).toLocaleDateString("th-TH", { year: "numeric", month: "long", day: "numeric" })}
+                    {openingDateText()}
                   </div>
                 )}
                 <button
@@ -653,7 +536,6 @@ export default function A1() {
                   />
                 </button>
 
-                {/* button language */}
                 <div className="relative">
                   <button
                     onClick={() => setShowLanguageOptions(!showLanguageOptions)}
@@ -668,19 +550,14 @@ export default function A1() {
                   {showLanguageOptions && <LanguageOptions />}
                 </div>
 
-                {/* button settings */}
                 <button
                   className="group bg-white/80 backdrop-blur-sm text-blue-700 p-2 rounded-xl shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300 text-lg font-bold border border-white/20"
                   onClick={() => setShowSettings(!showSettings)}
                 >
                   {showSettings ? (
-                    <span className="group-hover:rotate-90 transition-transform inline-block">
-                      ✕
-                    </span>
+                    <span className="group-hover:rotate-90 transition-transform inline-block">✕</span>
                   ) : (
-                    <span className="group-hover:rotate-45 transition-transform inline-block">
-                      ⚙️
-                    </span>
+                    <span className="group-hover:rotate-45 transition-transform inline-block">⚙️</span>
                   )}
                 </button>
               </div>
@@ -695,9 +572,7 @@ export default function A1() {
                       <p className="text-base font-semibold text-blue-900 mb-1">
                         {t.name} : {localStorage.getItem("username")}
                       </p>
-                      <p className="text-sm text-blue-600">
-                        {t.status} : {localStorage.getItem("role")}
-                      </p>
+                      <p className="text-sm text-blue-600">{t.status} : {localStorage.getItem("role")}</p>
                     </div>
                     <button
                       onClick={handleLogout}
@@ -709,31 +584,21 @@ export default function A1() {
                 </div>
               ) : (
                 <div className="flex flex-col gap-3 flex-1">
-                  <p className="text-xs text-right text-gray-600 italic">
-                    {getDateDisplayText()}
-                  </p>
+                  <p className="text-xs text-right text-gray-600 italic">{getDateDisplayText()}</p>
 
                   {/* Revenue */}
                   <div className="bg-gradient-to-br from-lightblue rounded-xl p-3 shadow">
                     <div className="flex items-center">
-                      <img src="/income.png" alt="logo" className="h-16 ml-2" />
+                      <img src="/income.png" alt="income" className="h-16 ml-2" />
                       <div className="flex-auto ml-4 pr-16">
-                        <p className="text-lg font-bold text-textc">
-                          {t.Revenue}
-                        </p>
+                        <p className="text-lg font-bold text-textc">{t.Revenue}</p>
                         <div className="flex justify-between">
-                          <p className="text-sm text-textc">
-                            {!selectedDate ? t.Today : "วัน"}:
-                          </p>
-                          <p className="text-sm text-textc">
-                            {fmt(kpi?.day_income, 2)} {t.bath}
-                          </p>
+                          <p className="text-sm text-textc">{t.Today}:</p>
+                          <p className="text-sm text-textc">{fmt(kpi?.day_income, 2)} {t.bath}</p>
                         </div>
                         <div className="flex justify-between">
                           <p className="text-sm text-textc">{t.Total}:</p>
-                          <p className="text-sm text-textc">
-                            {fmt(kpi?.total_income, 2)} {t.bath}
-                          </p>
+                          <p className="text-sm text-textc">{fmt(kpi?.total_income, 2)} {t.bath}</p>
                         </div>
                       </div>
                     </div>
@@ -742,30 +607,20 @@ export default function A1() {
                   {/* Yield */}
                   <div className="bg-gradient-to-br from-lightblue rounded-xl p-3 shadow">
                     <div className="flex items-center">
-                      <img src="/power.png" alt="logo" className="h-16 ml-2" />
+                      <img src="/power.png" alt="power" className="h-16 ml-2" />
                       <div className="flex-auto ml-4 pr-9">
-                        <p className="text-lg font-bold text-textc">
-                          {t.Yield}
-                        </p>
+                        <p className="text-lg font-bold text-textc">{t.Yield}</p>
                         <div className="flex justify-between">
-                          <p className="text-sm text-textc">
-                            {!selectedDate ? t.Today : "วัน"}:
-                          </p>
-                          <p className="text-sm text-textc">
-                            {fmt(kpi?.day_power, 2)} {t.kwh}
-                          </p>
+                          <p className="text-sm text-textc">{t.Today}:</p>
+                          <p className="text-sm text-textc">{fmt(kpi?.day_power, 2)} {t.kwh}</p>
                         </div>
                         <div className="flex justify-between">
                           <p className="text-sm text-textc">{t.Month}:</p>
-                          <p className="text-sm text-textc">
-                            {fmt(kpi?.month_power, 2)} {t.kwh}
-                          </p>
+                          <p className="text-sm text-textc">{fmt(kpi?.month_power, 2)} {t.kwh}</p>
                         </div>
                         <div className="flex justify-between">
                           <p className="text-sm text-textc">{t.Total}:</p>
-                          <p className="text-sm text-textc">
-                            {fmt(kpi?.total_power, 2)} {t.kwh}
-                          </p>
+                          <p className="text-sm text-textc">{fmt(kpi?.total_power, 2)} {t.kwh}</p>
                         </div>
                       </div>
                     </div>
@@ -774,12 +629,10 @@ export default function A1() {
                   {/* Trees */}
                   <div className="bg-gradient-to-br from-lightblue rounded-xl p-3 shadow">
                     <div className="flex items-center">
-                      <img src="/trees.png" alt="logo" className="h-16 pl-1" />
+                      <img src="/trees.png" alt="trees" className="h-16 pl-1" />
                       <div className="flex-auto ml-4">
                         <p className="text-lg font-bold text-textc">{t.tree}</p>
-                        <p className="text-sm text-textc">
-                          {fmtInt(kpi?.equivalent_trees)} {t.trees}
-                        </p>
+                        <p className="text-sm text-textc">{fmtInt(kpi?.equivalent_trees)} {t.trees}</p>
                       </div>
                     </div>
                   </div>
@@ -787,14 +640,10 @@ export default function A1() {
                   {/* Co2_avoided */}
                   <div className="bg-gradient-to-br from-lightblue rounded-xl p-3 shadow">
                     <div className="flex items-center">
-                      <img src="/co2.png" alt="logo" className="h-16 pl-1" />
+                      <img src="/co2.png" alt="co2" className="h-16 pl-1" />
                       <div className="flex-auto ml-4">
-                        <p className="text-lg font-bold text-textc">
-                          {t.co2Avoided}
-                        </p>
-                        <p className="text-sm text-textc">
-                          {fmtTon(kpi?.co2_avoided)} {t.ton}
-                        </p>
+                        <p className="text-lg font-bold text-textc">{t.co2Avoided}</p>
+                        <p className="text-sm text-textc">{fmtTon(kpi?.co2_avoided)} {t.ton}</p>
                       </div>
                     </div>
                   </div>
@@ -805,89 +654,28 @@ export default function A1() {
         </div>
       </div>
 
-      {/* Mobile Layout */}
+      {/* ===== Mobile Layout ===== */}
       <div className="md:hidden flex flex-col min-h-screen">
         {/* LOGO */}
         <div className=" flex justify-center items-center mt-4">
-          <img
-            src="/slogo.png"
-            alt="logo"
-            className="h-[70px] object-contain"
-          />
-          <img
-            src="/seafdeclogo.png"
-            alt="logo"
-            className="h-[70px] object-contain"
-          />
+          <img src="/slogo.png" alt="logo" className="h-[70px] object-contain" />
+          <img src="/seafdeclogo.png" alt="logo" className="h-[70px] object-contain" />
         </div>
 
-        {/* Structure */}
+        {/* Only yipintsoi.png */}
         <div className="flex-1 flex justify-center items-center pt-3">
-          <TransformWrapper
-            initialScale={1}
-            minScale={0.3}
-            maxScale={1}
-            centerOnInit
-          >
+          <TransformWrapper initialScale={1} minScale={0.3} maxScale={1} centerOnInit>
             <TransformComponent>
-              {selectedImage === "structure" ? (
-                <div className="relative flex justify-center items-center py-8">
-                  <img
-                    src="/flag.svg"
-                    alt="flag"
-                    className="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-10 h-100"
-                  />
-                  <img
-                    src="/structure.png"
-                    alt="structure"
-                    className="max-w-full max-h-[calc(100vh-10rem)] object-contain block mx-auto"
-                    draggable={false}
-                  />
-                </div>
-              ) : (
-                <div className="relative flex justify-center items-center">
-                  <img
-                    src="/map.png"
-                    alt="map"
-                    className="max-w-full max-h-[calc(100vh-10rem)] object-contain block mx-auto"
-                    draggable={false}
-                  />
-                </div>
-              )}
+              <div className="relative flex justify-center items-center py-8">
+                <img
+                  src="/yipintsoi.png"
+                  alt="yipintsoi"
+                  className="max-w-full max-h-[calc(100vh-10rem)] object-contain block mx-auto"
+                  draggable={false}
+                />
+              </div>
             </TransformComponent>
           </TransformWrapper>
-        </div>
-
-        {/* Image Selection Buttons - Mobile */}
-        <div className="flex justify-center">
-          <div className="flex gap-2 bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/20">
-            <button
-              onClick={() => setSelectedImage("structure")}
-              className={`p-1.5 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "structure"
-                ? "border-blue-500 bg-blue-100"
-                : "border-transparent"
-                }`}
-            >
-              <img
-                src="/structure.png"
-                alt="structure"
-                className="h-6 w-6 object-contain"
-              />
-            </button>
-            <button
-              onClick={() => setSelectedImage("map")}
-              className={`p-1.5 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "map"
-                ? "border-blue-500 bg-blue-100"
-                : "border-transparent"
-                }`}
-            >
-              <img
-                src="/map.png"
-                alt="map"
-                className="h-6 w-6 object-contain"
-              />
-            </button>
-          </div>
         </div>
 
         {/* Mobile KPI Panel */}
@@ -896,10 +684,9 @@ export default function A1() {
           <div className="flex justify-center items-center gap-2 flex-wrap">
             {openingDate && (
               <div className="text-xs md:text-sm text-black/80">
-                {t.openingDateLabel}: {new Date(openingDate).toLocaleDateString("th-TH", { year: "numeric", month: "long", day: "numeric" })}
+                {openingDateText()}
               </div>
             )}
-            {/* button calender */}
             <button
               onClick={handleDateModeChange}
               className="group bg-white/80 backdrop-blur-sm text-blue-700 p-2 rounded-xl shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300 border border-white/20"
@@ -911,7 +698,6 @@ export default function A1() {
               />
             </button>
 
-            {/* button language */}
             <div className="relative">
               <button
                 onClick={() => setShowLanguageOptions(!showLanguageOptions)}
@@ -926,19 +712,14 @@ export default function A1() {
               {showLanguageOptions && <LanguageOptions />}
             </div>
 
-            {/* button settings */}
             <button
               className="group bg-white/80 backdrop-blur-sm text-blue-700 p-2 rounded-xl shadow-lg hover:shadow-xl hover:bg-white hover:scale-105 transition-all duration-300 text-lg font-bold border border-white/20"
               onClick={() => setShowSettings(!showSettings)}
             >
               {showSettings ? (
-                <span className="group-hover:rotate-90 transition-transform inline-block">
-                  ✕
-                </span>
+                <span className="group-hover:rotate-90 transition-transform inline-block">✕</span>
               ) : (
-                <span className="group-hover:rotate-45 transition-transform inline-block">
-                  ⚙️
-                </span>
+                <span className="group-hover:rotate-45 transition-transform inline-block">⚙️</span>
               )}
             </button>
           </div>
@@ -967,7 +748,6 @@ export default function A1() {
             </div>
           ) : (
             <>
-              {/* KPI Panels */}
               <p className="text-xs text-center text-gray-600 italic">
                 {getDateDisplayText()}
               </p>
@@ -975,13 +755,11 @@ export default function A1() {
               {/* Revenue */}
               <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
                 <div className="flex items-center mb-2">
-                  <img src="/income.png" alt="logo" className="h-20 ml-6" />
+                  <img src="/income.png" alt="income" className="h-20 ml-6" />
                   <div className="flex-auto ml-4">
                     <p className="text-xl font-bold text-textc">{t.Revenue}</p>
                     <div className="flex justify-between">
-                      <p className="text-lg text-textc">
-                        {!selectedDate ? t.Today : "วัน"}:
-                      </p>
+                      <p className="text-lg text-textc">{t.Today}:</p>
                       <p className="text-lg text-textc mr-8">
                         {fmt(kpi?.day_income, 2)} {t.bath}
                       </p>
@@ -999,13 +777,11 @@ export default function A1() {
               {/* Yield */}
               <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
                 <div className="flex items-center mb-2 ">
-                  <img src="/power.png" alt="logo" className="h-20 ml-4" />
+                  <img src="/power.png" alt="power" className="h-20 ml-4" />
                   <div className="flex-auto ml-4">
                     <p className="text-xl font-bold text-textc">{t.Yield}</p>
                     <div className="flex justify-between ">
-                      <p className="text-lg text-textc">
-                        {!selectedDate ? t.Today : "วัน"}:
-                      </p>
+                      <p className="text-lg text-textc">{t.Today}:</p>
                       <p className="text-lg text-textc">
                         {fmt(kpi?.day_power, 2)} {t.kwh}
                       </p>
@@ -1029,7 +805,7 @@ export default function A1() {
               {/* Trees */}
               <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
                 <div className="flex items-center mb-2">
-                  <img src="/trees.png" alt="logo" className="h-20 pl-2" />
+                  <img src="/trees.png" alt="trees" className="h-20 pl-2" />
                   <div className="flex-auto ml-4">
                     <p className="text-xl font-bold text-textc">{t.tree}</p>
                     <p className="text-lg text-textc">
@@ -1042,11 +818,9 @@ export default function A1() {
               {/* Co2_avoided */}
               <div className="bg-gradient-to-br from-lightblue rounded-xl p-4 shadow">
                 <div className="flex items-center mb-2">
-                  <img src="/co2.png" alt="logo" className="h-20 pl-2" />
+                  <img src="/co2.png" alt="co2" className="h-20 pl-2" />
                   <div className="flex-auto ml-4">
-                    <p className="text-xl font-bold text-textc">
-                      {t.co2Avoided}
-                    </p>
+                    <p className="text-xl font-bold text-textc">{t.co2Avoided}</p>
                     <p className="text-lg text-textc">
                       {fmtTon(kpi?.co2_avoided)} {t.ton}
                     </p>
@@ -1057,22 +831,13 @@ export default function A1() {
               {/* Contact */}
               <div className="bottom-2 left-4">
                 <div className="flex items-start">
-                  {/* ข้อมูล Contact */}
                   <div className="flex flex-col">
                     <div className="flex items-center -mt-1">
                       <p className="text-sm text-black mt-5">Operated by</p>
-                      <img
-                        src="/solaryn.svg"
-                        alt="solaryn"
-                        className="h-[90px] absolute pl-16 pt-5"
-                      />
+                      <img src="/solaryn.svg" alt="solaryn" className="h-[90px] absolute pl-16 pt-5" />
                     </div>
-                    <p className="text-sm text-black">
-                      Contact (0) 2353 8600 Ext. 5504
-                    </p>
+                    <p className="text-sm text-black">Contact (0) 2353 8600 Ext. 5504</p>
                   </div>
-
-                  {/* QR Code */}
                   <div className="flex items-center mt-2 -ml-2">
                     <img src="/qr.svg" alt="qr" className="h-12" />
                   </div>

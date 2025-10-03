@@ -31,7 +31,7 @@ export default function Seafdec() {
         const base = process.env.REACT_APP_API_BASE_URL;
         const res = await fetch(`${base}/api/stations`);
         const list = await res.json();
-        const st = list.find(x => String(x.key).toLowerCase() === "seafdec");
+        const st = list.find((x) => String(x.key).toLowerCase() === "seafdec");
         setOpeningDate(st?.openingDate || null);
       } catch (err) {
         console.warn("[OpeningDate] seafdec fetch failed", err);
@@ -45,66 +45,69 @@ export default function Seafdec() {
   const [selectedDate, setSelectedDate] = useState("");
 
   // Language
-  const [language, setLanguage] = useState(() => localStorage.getItem("lang") || "en");
+  const [language, setLanguage] = useState(
+    () => localStorage.getItem("lang") || "en"
+  );
 
   // Persist language choice
-  useEffect(() => { localStorage.setItem("lang", language); }, [language]);
+  useEffect(() => {
+    localStorage.setItem("lang", language);
+  }, [language]);
 
-  const t =
-    {
-      th: {
-        Revenue: "ประหยัดค่าไฟฟ้า",
-        Today: "วันนี้",
-        Yesterday: "เมื่อวาน",
-        Month: "เดือน",
-        Total: "รวม",
-        Yield: "พลังงานที่ผลิต",
-        tree: "เทียบเท่าการปลูกต้นไม้ได้",
-        co2Avoided: "ลดการปล่อย CO₂",
-        trees: "ต้น",
-        kwh: "กิโลวัตต์",
-        ton: "ตัน",
-        bath: "บาท",
-        eng: "อังกฤษ",
-        thai: "ไทย",
-        todayText: "แสดงข้อมูลของวันนี้",
-        dateText: (date) => `แสดงข้อมูลของวันที่ ${date}`,
-        name: "ชื่อ",
-        status: "สถานะ",
-        logout: "ออกจากระบบ",
-        selectDate: "เลือกวันที่",
-        confirm: "ยืนยัน",
-        cancel: "ยกเลิก",
-        // เพิ่มข้อความใหม่สำหรับการแสดงผลวันเปิดใช้งาน
-        openingDateLabel: "วันเปิดใช้งาน",
-      },
-      en: {
-        Revenue: "Save electricity cost",
-        Today: "Today",
-        Yesterday: "Yesterday",
-        Month: "Month",
-        Total: "Total",
-        Yield: "Energy Yield",
-        tree: "Equivalent trees planted",
-        co2Avoided: "CO₂ avoided",
-        trees: "Trees",
-        kwh: "KWh",
-        ton: "Tons",
-        bath: "฿",
-        eng: "ENG",
-        thai: "ไทย",
-        todayText: "Show today's information",
-        dateText: (date) => `Show information of the date ${date}`,
-        name: "Name",
-        status: "Status",
-        logout: "Logout",
-        selectDate: "Select Date",
-        confirm: "Confirm",
-        cancel: "Cancel",
-        // เพิ่มข้อความใหม่สำหรับการแสดงผลวันเปิดใช้งาน
-        openingDateLabel: "On system",
-      },
-    }[language];
+  const t = {
+    th: {
+      Revenue: "ประหยัดค่าไฟฟ้า",
+      Today: "วันนี้",
+      Yesterday: "เมื่อวาน",
+      Month: "เดือน",
+      Total: "รวม",
+      Yield: "พลังงานที่ผลิต",
+      tree: "เทียบเท่าการปลูกต้นไม้ได้",
+      co2Avoided: "ลดการปล่อย CO₂",
+      trees: "ต้น",
+      kwh: "กิโลวัตต์",
+      ton: "ตัน",
+      bath: "บาท",
+      eng: "อังกฤษ",
+      thai: "ไทย",
+      todayText: "แสดงข้อมูลของวันนี้",
+      dateText: (date) => `แสดงข้อมูลของวันที่ ${date}`,
+      name: "ชื่อ",
+      status: "สถานะ",
+      logout: "ออกจากระบบ",
+      selectDate: "เลือกวันที่",
+      confirm: "ยืนยัน",
+      cancel: "ยกเลิก",
+      // เพิ่มข้อความใหม่สำหรับการแสดงผลวันเปิดใช้งาน
+      openingDateLabel: "วันเปิดใช้งาน",
+    },
+    en: {
+      Revenue: "Save electricity cost",
+      Today: "Today",
+      Yesterday: "Yesterday",
+      Month: "Month",
+      Total: "Total",
+      Yield: "Energy Yield",
+      tree: "Equivalent trees planted",
+      co2Avoided: "CO₂ avoided",
+      trees: "Trees",
+      kwh: "KWh",
+      ton: "Tons",
+      bath: "฿",
+      eng: "ENG",
+      thai: "ไทย",
+      todayText: "Show today's information",
+      dateText: (date) => `Show information of the date ${date}`,
+      name: "Name",
+      status: "Status",
+      logout: "Logout",
+      selectDate: "Select Date",
+      confirm: "Confirm",
+      cancel: "Cancel",
+      // เพิ่มข้อความใหม่สำหรับการแสดงผลวันเปิดใช้งาน
+      openingDateLabel: "On system",
+    },
+  }[language];
 
   // แปลง openingDate ข้อความตามภาษา
   const openingDateText = () => {
@@ -117,31 +120,31 @@ export default function Seafdec() {
     return `${t.openingDateLabel}: ${formatted}`;
   };
 
-  //number helpers (show 0 properly) 
+  //number helpers (show 0 properly)
   const isNil = (v) => v === null || v === undefined;
 
   const fmt = (v, digits = 2) =>
     isNil(v)
-      ? '-'
-      : Number(v).toLocaleString('en-US', {
-        minimumFractionDigits: digits,
-        maximumFractionDigits: digits,
-      });
+      ? "-"
+      : Number(v).toLocaleString("en-US", {
+          minimumFractionDigits: digits,
+          maximumFractionDigits: digits,
+        });
 
   const fmtInt = (v) =>
-    isNil(v) ? '-' : Number(v).toLocaleString('en-US');
+    isNil(v) ? "-" : Math.floor(Number(v)).toLocaleString("en-US");
 
   const fmtTon = (v) =>
     isNil(v)
-      ? '-'
-      : (Number(v) / 1000).toLocaleString('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
+      ? "-"
+      : (Number(v) / 1000).toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
 
   //helper คืน “วันนี้” แบบเวลาไทย
   const bkkToday = () =>
-    new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Bangkok' });
+    new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Bangkok" });
 
   // Auth guard
   useEffect(() => {
@@ -152,7 +155,22 @@ export default function Seafdec() {
   const formatDateForDisplay = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toLocaleDateString(language === "th" ? "th-TH" : "en-US");
+
+    // ภาษาไทย แสดงเป็น (วัน/เดือนย่อ/พ.ศ.)
+    if (language === "th") {
+      return date.toLocaleDateString("th-TH", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+    }
+
+    // เป็นภาษาอังกฤษ แสดงเป็น (วัน/เดือนย่อ/ค.ศ.)
+    return date.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
   };
 
   const fetchKPI = useCallback(async () => {
@@ -208,9 +226,7 @@ export default function Seafdec() {
 
   // Components
   const DatePickerModal = () => {
-    const [tempDate, setTempDate] = useState(
-      selectedDate || bkkToday()
-    );
+    const [tempDate, setTempDate] = useState(selectedDate || bkkToday());
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl p-6 shadow-2xl max-w-sm w-full">
@@ -253,19 +269,21 @@ export default function Seafdec() {
     <div className="absolute top-full right-0 mt-2 bg-white/90 backdrop-blur-lg rounded-xl shadow-xl border border-white/30 overflow-hidden z-40">
       <button
         onClick={() => handleLanguageSelect("th")}
-        className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${language === "th"
-          ? "bg-blue-100 text-blue-700 font-semibold"
-          : "text-gray-700"
-          }`}
+        className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${
+          language === "th"
+            ? "bg-blue-100 text-blue-700 font-semibold"
+            : "text-gray-700"
+        }`}
       >
         ไทย
       </button>
       <button
         onClick={() => handleLanguageSelect("en")}
-        className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${language === "en"
-          ? "bg-blue-100 text-blue-700 font-semibold"
-          : "text-gray-700"
-          }`}
+        className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors ${
+          language === "en"
+            ? "bg-blue-100 text-blue-700 font-semibold"
+            : "text-gray-700"
+        }`}
       >
         ENG
       </button>
@@ -286,13 +304,26 @@ export default function Seafdec() {
         <div className="flex-1 relative min-h-screen flex flex-col">
           {/* LOGO */}
           <div className="w-full flex justify-center mt-3">
-            <img src="/slogo.png" alt="logo" className="h-[120px] object-contain " />
-            <img src="/seafdeclogo.png" alt="logo" className="h-[120px] object-contain" />
+            <img
+              src="/slogo.png"
+              alt="logo"
+              className="h-[120px] object-contain "
+            />
+            <img
+              src="/seafdeclogo.png"
+              alt="logo"
+              className="h-[120px] object-contain"
+            />
           </div>
 
           {/* Structure / Map */}
           <div className="flex-1 flex items-start justify-center relative">
-            <TransformWrapper initialScale={1} minScale={0.3} maxScale={1} centerOnInit>
+            <TransformWrapper
+              initialScale={1}
+              minScale={0.3}
+              maxScale={1}
+              centerOnInit
+            >
               <TransformComponent>
                 {selectedImage === "structure" ? (
                   <div className="relative flex py-8">
@@ -326,17 +357,31 @@ export default function Seafdec() {
               <div className="flex gap-2 bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/20">
                 <button
                   onClick={() => setSelectedImage("structure")}
-                  className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "structure" ? "border-blue-500 bg-blue-100" : "border-transparent"
-                    }`}
+                  className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${
+                    selectedImage === "structure"
+                      ? "border-blue-500 bg-blue-100"
+                      : "border-transparent"
+                  }`}
                 >
-                  <img src="/structure.png" alt="structure" className="h-8 w-8 object-contain" />
+                  <img
+                    src="/structure.png"
+                    alt="structure"
+                    className="h-8 w-8 object-contain"
+                  />
                 </button>
                 <button
                   onClick={() => setSelectedImage("map")}
-                  className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "map" ? "border-blue-500 bg-blue-100" : "border-transparent"
-                    }`}
+                  className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${
+                    selectedImage === "map"
+                      ? "border-blue-500 bg-blue-100"
+                      : "border-transparent"
+                  }`}
                 >
-                  <img src="/map.png" alt="map" className="h-8 w-8 object-contain" />
+                  <img
+                    src="/map.png"
+                    alt="map"
+                    className="h-8 w-8 object-contain"
+                  />
                 </button>
               </div>
             </div>
@@ -348,7 +393,11 @@ export default function Seafdec() {
               <div className="flex flex-col">
                 <div className="flex items-center -mt-1">
                   <p className="text-black mt-5">Operated by</p>
-                  <img src="/solaryn.svg" alt="solaryn" className="h-[100px] absolute pl-20 pt-5" />
+                  <img
+                    src="/solaryn.svg"
+                    alt="solaryn"
+                    className="h-[100px] absolute pl-20 pt-5"
+                  />
                 </div>
                 <p className="text-black">Contact (0) 2353 8600 Ext. 5504</p>
               </div>
@@ -371,7 +420,11 @@ export default function Seafdec() {
             )}
 
             {/* button */}
-            <div className={`flex items-center gap-3 ${!openingDate ? 'ml-auto' : ''}`}>
+            <div
+              className={`flex items-center gap-3 ${
+                !openingDate ? "ml-auto" : ""
+              }`}
+            >
               {/* Calendar */}
               <button
                 onClick={handleDateModeChange}
@@ -428,7 +481,9 @@ export default function Seafdec() {
                   <p className="text-2xl font-semibold text-blue-900 mb-1">
                     {t.name} : {localStorage.getItem("username")}
                   </p>
-                  <p className="text-2lx text-blue-600">{t.status} : {localStorage.getItem("role")}</p>
+                  <p className="text-2lx text-blue-600">
+                    {t.status} : {localStorage.getItem("role")}
+                  </p>
                 </div>
                 <button
                   onClick={handleLogout}
@@ -440,7 +495,9 @@ export default function Seafdec() {
             </div>
           ) : (
             <div className="flex flex-col gap-4 flex-1">
-              <p className="text-sm text-right text-gray-600 italic">{getDateDisplayText()}</p>
+              <p className="text-sm text-right text-gray-600 italic">
+                {getDateDisplayText()}
+              </p>
 
               {/* Revenue */}
               <div className="bg-gradient-to-br from-lightblue rounded-2xl p-8 shadow">
@@ -449,7 +506,9 @@ export default function Seafdec() {
                   <div className="flex-auto ml-8 mr-16">
                     <p className="text-2xl font-bold text-textc">{t.Revenue}</p>
                     <div className="flex justify-between">
-                      <p className="text-2xl text-textc">{!selectedDate ? t.Today : "วัน"}:</p>
+                      <p className="text-2xl text-textc">
+                        {!selectedDate ? t.Today : "วัน"}:
+                      </p>
                       <p className="text-2xl text-textc mr-8">
                         {fmt(kpi?.day_income, 2)} {t.bath}
                       </p>
@@ -471,7 +530,9 @@ export default function Seafdec() {
                   <div className="flex-auto ml-8 mr-16">
                     <p className="text-2xl font-bold text-textc">{t.Yield}</p>
                     <div className="flex justify-between ">
-                      <p className="text-2xl text-textc">{!selectedDate ? t.Today : "วัน"}:</p>
+                      <p className="text-2xl text-textc">
+                        {!selectedDate ? t.Today : "วัน"}:
+                      </p>
                       <p className="text-2xl text-textc">
                         {fmt(kpi?.day_power, 2)} {t.kwh}
                       </p>
@@ -510,7 +571,9 @@ export default function Seafdec() {
                 <div className="flex items-center">
                   <img src="/co2.png" alt="logo" className="h-24 pl-2" />
                   <div className="flex-auto ml-8">
-                    <p className="text-2xl font-bold text-textc">{t.co2Avoided}</p>
+                    <p className="text-2xl font-bold text-textc">
+                      {t.co2Avoided}
+                    </p>
                     <p className="text-2xl text-textc">
                       {fmtTon(kpi?.co2_avoided)} {t.ton}
                     </p>
@@ -583,10 +646,11 @@ export default function Seafdec() {
                   <div className="flex gap-2 bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/20">
                     <button
                       onClick={() => setSelectedImage("structure")}
-                      className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "structure"
-                        ? "border-blue-500 bg-blue-100"
-                        : "border-transparent"
-                        }`}
+                      className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${
+                        selectedImage === "structure"
+                          ? "border-blue-500 bg-blue-100"
+                          : "border-transparent"
+                      }`}
                     >
                       <img
                         src="/structure.png"
@@ -596,10 +660,11 @@ export default function Seafdec() {
                     </button>
                     <button
                       onClick={() => setSelectedImage("map")}
-                      className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "map"
-                        ? "border-blue-500 bg-blue-100"
-                        : "border-transparent"
-                        }`}
+                      className={`p-2 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${
+                        selectedImage === "map"
+                          ? "border-blue-500 bg-blue-100"
+                          : "border-transparent"
+                      }`}
                     >
                       <img
                         src="/map.png"
@@ -641,7 +706,12 @@ export default function Seafdec() {
                 {/* button calendar */}
                 {openingDate && (
                   <div className="text-xs md:text-sm text-black/80">
-                    {t.openingDateLabel}: {new Date(openingDate).toLocaleDateString("th-TH", { year: "numeric", month: "long", day: "numeric" })}
+                    {t.openingDateLabel}:{" "}
+                    {new Date(openingDate).toLocaleDateString("th-TH", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
                   </div>
                 )}
                 <button
@@ -865,10 +935,11 @@ export default function Seafdec() {
           <div className="flex gap-2 bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/20">
             <button
               onClick={() => setSelectedImage("structure")}
-              className={`p-1.5 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "structure"
-                ? "border-blue-500 bg-blue-100"
-                : "border-transparent"
-                }`}
+              className={`p-1.5 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${
+                selectedImage === "structure"
+                  ? "border-blue-500 bg-blue-100"
+                  : "border-transparent"
+              }`}
             >
               <img
                 src="/structure.png"
@@ -878,10 +949,11 @@ export default function Seafdec() {
             </button>
             <button
               onClick={() => setSelectedImage("map")}
-              className={`p-1.5 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${selectedImage === "map"
-                ? "border-blue-500 bg-blue-100"
-                : "border-transparent"
-                }`}
+              className={`p-1.5 rounded-lg hover:bg-blue-50 transition-all duration-300 border-2 hover:scale-105 ${
+                selectedImage === "map"
+                  ? "border-blue-500 bg-blue-100"
+                  : "border-transparent"
+              }`}
             >
               <img
                 src="/map.png"
@@ -898,7 +970,12 @@ export default function Seafdec() {
           <div className="flex justify-center items-center gap-2 flex-wrap">
             {openingDate && (
               <div className="text-xs md:text-sm text-black/80">
-                {t.openingDateLabel}: {new Date(openingDate).toLocaleDateString("th-TH", { year: "numeric", month: "long", day: "numeric" })}
+                {t.openingDateLabel}:{" "}
+                {new Date(openingDate).toLocaleDateString("th-TH", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
               </div>
             )}
             {/* button calender */}
